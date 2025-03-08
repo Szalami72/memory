@@ -5,7 +5,7 @@ import { LoginButtonsComponent } from './features/auth/components/login-buttons/
 @Component({
   selector: 'app-root',
   standalone: true, // Valószínűleg már standalone, ha nem, add hozzá
-  imports: [RouterOutlet, LoginButtonsComponent], // Add hozzá a LoginButtonsComponent-et az imports tömbhöz!
+  imports: [RouterOutlet,], // Add hozzá a LoginButtonsComponent-et az imports tömbhöz!
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

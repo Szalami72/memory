@@ -10,12 +10,37 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AuthService } from './app/core/services/auth.service';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
+import { authRoutes } from './app/features/auth/auth.routes';
+import { RouterModule, Routes } from '@angular/router';
+import { GameMainComponent } from './app/features/game/components/game-main/game-main.component';
+
+export const routes: Routes = [
+  {
+    path: 'auth',
+    children: authRoutes
+  },
+  {
+    path: 'home',
+    component: GameMainComponent
+  },
+  {
+    path: '',
+    component: AppComponent
+  },
+  {
+    path: '**',
+    redirectTo: '',
+    pathMatch: 'full'
+  }
+];
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(AngularFireModule.initializeApp(environment.firebase)),
-    provideFirebaseApp(() => initializeApp(environment.firebase)), // 🔹 Firebase inicializálása
-    provideAuth(() => getAuth()), // 🔹 Auth provider hozzáadása
-    AuthService
-  ]
+    
+     importProvidersFrom(AngularFireModule.initializeApp(environment.firebase)), // 🔹 AngularFireModule külön importProvidersFrom hívásban
+     importProvidersFrom(RouterModule.forRoot(routes)), // 🔹 RouterModule külön importProvidersFrom hívásban
+     provideFirebaseApp(() => initializeApp(environment.firebase)),
+     provideAuth(() => getAuth()),
+     AuthService
+    ]
 }).catch(err => console.error(err));

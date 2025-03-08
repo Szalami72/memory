@@ -1,0 +1,6 @@
+<div *ngIf="(user$ | async) as user">
+    <h1>Üdvözöllek, {{ user?.displayName || 'Vendég' }}!</h1>
+    <p>Email: {{ user?.email || 'Nincs email cím' }}</p>
+    <button (click)="logout()">Kijelentkezés</button>
+  </div>
+  
