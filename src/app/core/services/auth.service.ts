@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
-import { Auth, signInWithPopup, FacebookAuthProvider } from '@angular/fire/auth';
+import { Auth, signInWithPopup, FacebookAuthProvider, GoogleAuthProvider } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -89,5 +89,37 @@ export class AuthService {
       console.error('Hiba a kijelentkezés során:', error);
       throw error;
     }
+  }
+
+  // Segédfüggvény a Google hitelesítési adat beszerzéséhez a meglévő fiókhoz (javított verzió)
+  private async getCredentialForExistingAccount(user: firebase.User): Promise<any> { // 👈 Eltávolítottuk a providerId paramétert
+    const googleProviderData = user.providerData.find(provider => provider?.providerId === 'google.com'); // 👈 Keressük a Google provider adatokat
+    if (googleProviderData) { // 👈 Ellenőrizzük, hogy van-e Google provider adat
+      const idToken = await user.getIdToken();
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+      return googleCredential;
+    }
+    return null;
+  }
+
+  public getUserEmail(user: firebase.User | null): string | null { // ✅getUserEmail függvény
+    if (!user) {
+      return null; // Ha nincs felhasználó, akkor nincs email cím
+    }
+
+    if (user.email) {
+      return user.email; // Ha közvetlenül van email cím, akkor használjuk azt
+    }
+
+    if (user.providerData && user.providerData.length > 0) {
+      // Végigmegyünk a providerData tömbön, és megkeressük az email címet
+      for (const provider of user.providerData) {
+        if (provider && provider.email) {
+          return provider.email; // Ha találunk email címet provider adatban, akkor használjuk azt
+        }
+      }
+    }
+
+    return null; // Ha semhol nem találunk email címet, akkor null-t adunk vissza
   }
 }
