@@ -12,7 +12,7 @@ export class AuthService {
   private userSubject = new BehaviorSubject<firebase.User | null>(null);
   public user$: Observable<firebase.User | null> = this.userSubject.asObservable();
 
-  private isLoggedInSubject = new BehaviorSubject<boolean>(false);
+  public isLoggedInSubject = new BehaviorSubject<boolean>(false);
   public isLoggedIn$: Observable<boolean> = this.isLoggedInSubject.asObservable();
 
   constructor(private afAuth: AngularFireAuth, private auth: Auth, private router: Router) {
@@ -84,7 +84,7 @@ export class AuthService {
       this.userSubject.next(null);
       this.isLoggedInSubject.next(false);
       console.log('Sikeres kijelentkezés!');
-      this.router.navigate(['/login']); // Átirányítás a bejelentkező oldalra
+      this.router.navigate(['auth/login']); // Átirányítás a bejelentkező oldalra
     } catch (error) {
       console.error('Hiba a kijelentkezés során:', error);
       throw error;

@@ -13,6 +13,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { authRoutes } from './app/features/auth/auth.routes';
 import { RouterModule, Routes } from '@angular/router';
 import { GameMainComponent } from './app/features/game/components/game-main/game-main.component';
+import { AuthGuard } from './app/core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -21,7 +22,8 @@ export const routes: Routes = [
   },
   {
     path: 'home',
-    component: GameMainComponent
+    component: GameMainComponent,
+    canActivate: [AuthGuard] 
   },
   {
     path: '',
