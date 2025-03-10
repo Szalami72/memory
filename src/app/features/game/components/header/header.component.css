@@ -1,0 +1,3 @@
+.game-title{
+    font-size: clamp(24px, 10vw, 48px);
+}

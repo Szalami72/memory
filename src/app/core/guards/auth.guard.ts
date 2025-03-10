@@ -15,17 +15,17 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> {
     return this.authService.user$.pipe(
-      take(1), // Egy alkalommal várjuk meg az állapotot
+      take(1),
       switchMap(user => {
-        if (user) {
-          // Ha be van jelentkezve a felhasználó
+        const storedUser = localStorage.getItem('user'); // 🔴 Ellenőrizzük a localStorage-t
+        if (user || storedUser) {
           return of(true);
         } else {
-          // Ha nincs bejelentkezve, átirányítjuk a login oldalra
           this.router.navigate(['/auth/login']);
           return of(false);
         }
       })
     );
   }
+  
 }

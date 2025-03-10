@@ -1,0 +1,14 @@
+/* login.component.css (vagy styles.css) */
+.full-screen-background {
+    background-image: url('../../../../../assets/images/login-background.png'); 
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: bisque;
+  }
+
+ h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color:darkred;
+    margin-bottom: 5rem;
+  }

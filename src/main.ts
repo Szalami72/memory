@@ -10,39 +10,16 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AuthService } from './app/core/services/auth.service';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
-import { authRoutes } from './app/features/auth/auth.routes';
-import { RouterModule, Routes } from '@angular/router';
-import { GameMainComponent } from './app/features/game/components/game-main/game-main.component';
-import { AuthGuard } from './app/core/guards/auth.guard';
+import { RouterModule } from '@angular/router';
+import { routes } from './app/app.routes'; // ✅ Importáld a helyes routes-t az app.routes.ts-ből!
 
-export const routes: Routes = [
-  {
-    path: 'auth',
-    children: authRoutes
-  },
-  {
-    path: 'home',
-    component: GameMainComponent,
-    canActivate: [AuthGuard] 
-  },
-  {
-    path: '',
-    component: AppComponent
-  },
-  {
-    path: '**',
-    redirectTo: '',
-    pathMatch: 'full'
-  }
-];
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    
-     importProvidersFrom(AngularFireModule.initializeApp(environment.firebase)), // 🔹 AngularFireModule külön importProvidersFrom hívásban
-     importProvidersFrom(RouterModule.forRoot(routes)), // 🔹 RouterModule külön importProvidersFrom hívásban
-     provideFirebaseApp(() => initializeApp(environment.firebase)),
-     provideAuth(() => getAuth()),
-     AuthService
+    providers: [
+        importProvidersFrom(AngularFireModule.initializeApp(environment.firebase)),
+        importProvidersFrom(RouterModule.forRoot(routes)), // ✅ Használd az importált routes-t!
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideAuth(() => getAuth()),
+        AuthService
     ]
 }).catch(err => console.error(err));

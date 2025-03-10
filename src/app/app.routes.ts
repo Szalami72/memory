@@ -1,7 +1,8 @@
 
 import { Routes } from '@angular/router';
 import { authRoutes } from './features/auth/auth.routes';
-import { GameMainComponent } from './features/game/components/game-main/game-main.component';
+import { HomeComponent } from './features/game/components/home/home.component';
+import { AuthGuard } from './core/guards/auth.guard';
 
 
 export const routes: Routes = [
@@ -11,8 +12,9 @@ export const routes: Routes = [
   },
   {
     path: 'home',
-    component: GameMainComponent,
- // 🔹 AuthGuard biztosítja a védett útvonalat
+    component: HomeComponent,
+    canActivate: [AuthGuard]
+
   },
   {
     path: '',

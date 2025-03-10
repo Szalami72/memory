@@ -1,12 +1,12 @@
 <div class="login-buttons-container">
     <button (click)="loginWithGoogle()" class="login-button google-login">
-      <img src="assets/images/google-icon.png" alt="Google ikon"> Bejelentkezés Google-lel
+      <img src="assets/images/google-icon.png" alt="Google ikon"> Login with Google
     </button>
     <button (click)="loginWithFacebook()" class="login-button facebook-login">
-      <img src="assets/images/facebook-icon.png" alt="Facebook ikon"> Bejelentkezés Facebook-kal
+      <img src="assets/images/facebook-icon.png" alt="Facebook ikon"> Login with Facebook
     </button>
     <button (click)="loginAsGuest()" class="login-button guest-login">
-      Vendég bejelentkezés
+      Login as Guest
     </button>
   
     <div *ngIf="loginError" class="login-error">

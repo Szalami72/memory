@@ -1,0 +1,31 @@
+  
+  .container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  header {
+    height: clamp(60px, 10vh, 120px);
+    background-color: antiquewhite;
+  }
+  
+  nav {
+    height: clamp(60px, 15vh, 120px);
+    background-color: aquamarine;
+    /* margin-bottom: clamp(5px, 2vh, 10px); */
+  }
+  
+  section {
+    height: calc(100vh - var(clamp(60px, 10vh, 120px)) - var(clamp(60px, 10vh, 120px)));
+    background-color: burlywood;
+    overflow-y: auto;
+  }
+
+  .full-screen-background {
+    background-image: url('../../../../../assets/images/login-background.png'); 
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: bisque;
+  }
+  

@@ -15,13 +15,30 @@ export class AuthService {
   public isLoggedInSubject = new BehaviorSubject<boolean>(false);
   public isLoggedIn$: Observable<boolean> = this.isLoggedInSubject.asObservable();
 
+  ngOnInit() {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      this.userSubject.next(JSON.parse(storedUser));
+      this.isLoggedInSubject.next(true);
+    }
+  }
+  
   constructor(private afAuth: AngularFireAuth, private auth: Auth, private router: Router) {
-    // Figyeljük az auth állapotát, és frissítjük a userSubject-et
-    this.afAuth.authState.subscribe(user => {
-      this.userSubject.next(user);
-      this.isLoggedInSubject.next(!!user);
+    this.afAuth.authState.subscribe(async user => {
+      if (user) {
+        const refreshedUser = await this.afAuth.currentUser;
+        this.userSubject.next(refreshedUser);
+        this.isLoggedInSubject.next(true);
+        localStorage.setItem('user', JSON.stringify(refreshedUser)); // 🔴 Felhasználó mentése
+      } else {
+        this.userSubject.next(null);
+        this.isLoggedInSubject.next(false);
+        localStorage.removeItem('user'); // 🔴 Ha nincs bejelentkezve, töröljük az állapotot
+      }
     });
   }
+  
+  
 
   // ✅ Google bejelentkezés
   async loginWithGoogle(): Promise<void> {
