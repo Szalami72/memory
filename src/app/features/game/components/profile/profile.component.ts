@@ -7,7 +7,7 @@ import { AuthService } from '../../../../core/services/auth.service';
   standalone: true,
   imports: [],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css'
+  styleUrls: ['./profile.component.css', '../../../../shared/styles/menu-windows.css']
 })
 export class ProfileComponent {
 

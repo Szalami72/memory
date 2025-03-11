@@ -2,3 +2,7 @@
     padding-top: 2vh;
     font-size: clamp(24px, 10vw, 48px);
 }
+
+.name {
+    font-size: larger;
+}

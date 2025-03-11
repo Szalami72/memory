@@ -20,34 +20,28 @@
     width: 80%; /* Fix szélesség a gomboknak */
     justify-content: center; /* Tartalom középre vízszintesen */
   
-    img {
-      height: 20px; /* Ikon mérete */
-    }
-  
     &:focus { /* Fókusz stílus */
-      outline: 2px solid blue;
+      outline: 2px solid #666; /* Körvonal */
     }
   }
   
   .google-login {
-    background-color: #4285F4; /* Google kék */
-    &:hover {
-      background-color: #2962CC; /* Sötétebb Google kék hover-re */
+    background-color: #eee; /* Google kék */
+    color: #444;
+    & img {
+      width: 25px; /* Ikon szélessége */
     }
   }
   
   .facebook-login {
     background-color: #1877F2; /* Facebook kék */
-    &:hover {
-      background-color: #105CB3; /* Sötétebb Facebook kék hover-re */
+    & img {
+      width: 25px; /* Ikon szélessége */
     }
   }
   
   .guest-login {
     background-color: #6c757d; /* Szürke vendég gombhoz */
-    &:hover {
-      background-color: #545b62; /* Sötétebb szürke hover-re */
-    }
   }
   
   

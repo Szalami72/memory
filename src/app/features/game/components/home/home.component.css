@@ -3,6 +3,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    z-index: 1; /* Fontos: A tartalom fölé kerüljön */
   }
   
   header {
