@@ -1,19 +1,22 @@
 <div class="login-buttons-container">
-    <button (click)="loginWithGoogle()" class="login-button google-login">
-      <img src="assets/images/google-icon.png" alt="Google ikon"> Login with Google
-    </button>
-    <button (click)="loginWithFacebook()" class="login-button facebook-login">
-      <img src="assets/images/facebook-icon.png" alt="Facebook ikon"> Login with Facebook
-    </button>
-    <button (click)="loginAsGuest()" class="login-button guest-login">
-      Login as Guest
-    </button>
-  
-    <div *ngIf="loginError" class="login-error">
-      {{ loginError }}
-    </div>
-    
+  <button (click)="loginWithGoogle()" class="login-button google-login">
+    <img src="assets/images/google-icon.png" alt="Google ikon" class="login-icon">
+    <span class="login-text">Login with Google</span>
+  </button>
+  <button (click)="loginWithFacebook()" class="login-button facebook-login">
+    <img src="assets/images/facebook-icon.png" alt="Facebook ikon" class="login-icon">
+    <span class="login-text">Login with Facebook</span>
+  </button>
+  <button (click)="loginAsGuest()" class="login-button guest-login">
+    <img src="assets/images/profile-icon-gray.png" alt="Guest ikon" class="login-icon">
+    <span class="login-text">Login as Guest</span>
+  </button>
+
+  <div *ngIf="loginError" class="login-error">
+    {{ loginError }}
   </div>
+</div>
+
 
 
   <!-- login error template

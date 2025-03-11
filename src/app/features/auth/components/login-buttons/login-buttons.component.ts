@@ -20,6 +20,7 @@ export class LoginButtonsComponent implements OnInit {
    } // Injektáld az AuthService-t
 
   ngOnInit(): void {
+    
   }
 
 loginWithGoogle(): void {

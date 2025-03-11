@@ -18,7 +18,7 @@
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); /* Árnyék */
     gap: 10px; /* Távolság ikon és szöveg között */
     width: 80%; /* Fix szélesség a gomboknak */
-    justify-content: center; /* Tartalom középre vízszintesen */
+    justify-content: flex-start; /* Tartalom középre vízszintesen */
   
     &:focus { /* Fókusz stílus */
       outline: 2px solid #666; /* Körvonal */
@@ -42,14 +42,21 @@
   
   .guest-login {
     background-color: #6c757d; /* Szürke vendég gombhoz */
+    & img {
+      width: 25px; /* Ikon szélessége */
+    }
   }
-  
+
+  .login-text {
+    flex: 1; /* Kitölti a rendelkezésre álló helyet */
+    text-align: center; /* Középre igazítja a szöveget */
+}
   
   .login-error {
     color: red;
+    font-weight: bold;
     background-color: #fff;
-    border-radius: 5px;
-    width: 100%;
+    width: 100vw;
     margin-top: 6vh;
     padding: 5px 10px;
     text-align: center;

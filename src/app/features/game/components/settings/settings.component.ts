@@ -22,11 +22,11 @@ export class SettingsComponent implements OnInit {
   constructor(private router: Router) { 
     const savedSound = localStorage.getItem('soundSetting');
     if (savedSound !== null) {
-      this.isSoundOn = JSON.parse(savedSound); // Beállítás betöltése
+      this.isSoundOn = JSON.parse(savedSound);
     }
     const savedColors = localStorage.getItem('colorsSetting');
     if (savedColors !== null) {
-      this.isColorsOn = JSON.parse(savedColors); // Beállítás betöltése
+      this.isColorsOn = JSON.parse(savedColors);
     }
   }
 
@@ -44,7 +44,7 @@ export class SettingsComponent implements OnInit {
   
   async loadSoundSetting() {
     const { value } = await Preferences.get({ key: 'soundSetting' });
-    this.isSoundOn = value ? JSON.parse(value) : true; // Alapértelmezett érték: true
+    this.isSoundOn = value ? JSON.parse(value) : true;
   }
 
   async toggleColors() {
@@ -57,6 +57,6 @@ export class SettingsComponent implements OnInit {
 
   async loadColorsSetting() {
     const { value } = await Preferences.get({ key: 'colorsSetting' });
-    this.isColorsOn = value ? JSON.parse(value) : true; // Alapértelmezett érték: true
+    this.isColorsOn = value ? JSON.parse(value) : true;
   }
 }
