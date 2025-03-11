@@ -6,26 +6,37 @@
   }
   
   header {
-    height: clamp(60px, 10vh, 120px);
-    background-color: antiquewhite;
+    height: clamp(90px, 12vh, 120px);
   }
   
   nav {
-    height: clamp(60px, 15vh, 120px);
-    background-color: aquamarine;
-    /* margin-bottom: clamp(5px, 2vh, 10px); */
+    height: clamp(100px, 15vh, 140px);
   }
   
-  section {
-    height: calc(100vh - var(clamp(60px, 10vh, 120px)) - var(clamp(60px, 10vh, 120px)));
-    background-color: burlywood;
-    overflow-y: auto;
-  }
+  .section {
+    height: calc(100vh - clamp(100px, 15vh, 140px) - clamp(90px, 12vh, 120px)); /* Javított calc() */
+    margin-top: clamp(90px, 12vh, 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column
+}
 
-  .full-screen-background {
-    background-image: url('../../../../../assets/images/login-background.png'); 
+app-section {
+  height: 100%;
+  width: 100%;
+}
+
+.background {
+    background-image: url('../../../../../assets/images/login-background.png');
     background-size: cover;
     background-repeat: no-repeat;
-    background-color: bisque;
-  }
-  
+    background-color: bisque; /* Tartsd meg a fallback színt */
+
+    position: fixed; /* Fontos: Rögzített pozíciózás */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Fontos: Háttérbe küldjük, a többi tartalom fölé kerüljön */
+}

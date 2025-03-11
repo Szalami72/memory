@@ -1,4 +1,5 @@
 .login-buttons-container {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 10px; /* Távolság a gombok között */
@@ -16,7 +17,7 @@
     color: white;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); /* Árnyék */
     gap: 10px; /* Távolság ikon és szöveg között */
-    width: 250px; /* Fix szélesség a gomboknak */
+    width: 80%; /* Fix szélesség a gomboknak */
     justify-content: center; /* Tartalom középre vízszintesen */
   
     img {
@@ -52,6 +53,12 @@
   
   .login-error {
     color: red;
-    margin-top: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 6vh;
+    padding: 5px 10px;
     text-align: center;
+    display: block; /* Hozzáadva */
+    box-sizing: border-box; /* Hozzáadva */
   }

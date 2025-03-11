@@ -21,9 +21,6 @@ export class HomeComponent {
   constructor(private authService: AuthService) {
     }
   
-    logout(): void {
-      this.authService.logout();
-    }
   
     getUserEmail(user: firebase.User | null): string {
       return this.authService.getUserEmail(user) || 'Nincs email cím';

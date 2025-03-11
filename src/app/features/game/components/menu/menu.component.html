@@ -1,8 +1,11 @@
 <div class="menu-container">
-    <div class="menu-element"></div>
-    <div class="menu-element"></div>
-    <div class="menu-element"></div>
-</div> 
-
-  
-  
+    <div class="menu-element" (click)="navigateToMenuItem('daily-challenge')">
+      <img src="assets/images/calendar-icon.png" alt="Calendar" />
+    </div>
+    <div class="menu-element" (click)="navigateToMenuItem('settings')">
+      <img src="assets/images/settings-icon.png" alt="Settings" />
+    </div>
+    <div class="menu-element" (click)="navigateToMenuItem('profile')">
+      <img src="assets/images/profile-icon.png" alt="Profile" />
+    </div>
+  </div>

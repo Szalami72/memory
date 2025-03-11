@@ -2,17 +2,20 @@
 .menu-container{
     height: 100%;
     width: 100%;
+    padding: 0 7%;
     display: flex;
     flex-wrap: nowrap;
-    justify-content: space-evenly;
+    justify-content:space-between;
     align-items: center;
 }
 .menu-element {
-    background-color: lightblue; /* Példa háttérszín, cseréld le a kívánt színre */
-    border: 1px solid black; /* Példa keret, testreszabható */
-    height: 75%; /* Fontos: A magasság a befogadó div magasságának 75%-a */
+    height: 50%; /* Fontos: A magasság a befogadó div magasságának 75%-a */
     aspect-ratio: 1/1; /* Kulcsfontosságú: Négyzet arány megtartása */
     width: auto; /* Fontos: Szélesség legyen auto, hogy az aspect-ratio szabályozza */
+  }
+  
+  .menu-element img {
+    width: 100%; /* A kepek automatikusan a div magassága megfeleljen */
   }
   
   

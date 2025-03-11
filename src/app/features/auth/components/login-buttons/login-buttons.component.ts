@@ -15,7 +15,9 @@ export class LoginButtonsComponent implements OnInit {
 
   loginError: string | null = null; // Változó a hibaüzenet tárolására
 
-  constructor(public authService: AuthService) { } // Injektáld az AuthService-t
+  constructor(public authService: AuthService) {
+    
+   } // Injektáld az AuthService-t
 
   ngOnInit(): void {
   }
@@ -25,7 +27,7 @@ loginWithGoogle(): void {
   from(this.authService.loginWithGoogle())
     .pipe(
       catchError(error => {
-        this.loginError = 'Hiba történt a Google bejelentkezés során. Próbáld újra később.'; // Állítsd be a hibaüzenetet
+        this.loginError = 'Login error! Please try it later!'; // Állítsd be a hibaüzenetet
         console.error('Google Login Error:', error);
         return of(null); // Fontos, hogy Observable-t adj vissza a catchError-ban, pl. of(null)
       })
@@ -38,7 +40,7 @@ loginWithGoogle(): void {
     from(this.authService.loginWithFacebook())
       .pipe(
         catchError(error => {
-          this.loginError = 'Hiba történt a Facebook bejelentkezés során. Próbáld újra később.';
+          this.loginError = 'Login error! Please try it later!';
           console.error('Facebook Login Error:', error);
           return of(null);
         })
@@ -51,7 +53,7 @@ loginWithGoogle(): void {
     from(this.authService.loginAsGuest())
       .pipe(
         catchError(error => {
-          this.loginError = 'Hiba történt a vendég bejelentkezés során. Próbáld újra később.';
+          this.loginError = 'Login error! Please try it later!';
           console.error('Guest Login Error:', error);
           return of(null);
         })
