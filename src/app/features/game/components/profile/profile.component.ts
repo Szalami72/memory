@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { MusicService } from '../../services/music.service';
 
 @Component({
   selector: 'app-profile',
@@ -12,10 +13,12 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class ProfileComponent {
 
   constructor(private authService: AuthService,
-    private router: Router
+    private router: Router, private musicService: MusicService
+    
   ) { }
 
   logout(): void {
+    this.musicService.stopMusic();
     this.authService.logout();
   }
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
+import { MusicService } from '../../services/music.service'; // igazítsd az elérési útvonalat
 
 @Component({
   selector: 'app-settings',
@@ -13,50 +14,46 @@ export class SettingsComponent implements OnInit {
 
   isSoundOn = true;
   isColorsOn = true;
+  isMusicOn = true;
+  isVibrationOn = true;
 
-  ngOnInit() {
-    this.loadSoundSetting();
-    this.loadColorsSetting();
+  constructor(private router: Router,
+              private musicService: MusicService) {}
+
+  async ngOnInit() {
+    this.isSoundOn = await this.getSetting('soundSetting', true);
+    this.isColorsOn = await this.getSetting('colorsSetting', true);
+    this.isMusicOn = await this.getSetting('musicSetting', true);
+    this.isVibrationOn = await this.getSetting('vibrationSetting', true);
   }
 
-  constructor(private router: Router) { 
-    const savedSound = localStorage.getItem('soundSetting');
-    if (savedSound !== null) {
-      this.isSoundOn = JSON.parse(savedSound);
-    }
-    const savedColors = localStorage.getItem('colorsSetting');
-    if (savedColors !== null) {
-      this.isColorsOn = JSON.parse(savedColors);
+  async getSetting(key: string, defaultValue: boolean): Promise<boolean> {
+    const { value } = await Preferences.get({ key });
+    return value !== null ? JSON.parse(value) : defaultValue;
+  }
+
+  async setSetting(key: string, value: boolean): Promise<void> {
+    await Preferences.set({
+      key,
+      value: JSON.stringify(value)
+    });
+  }
+
+  async toggleSetting(setting: 'isSoundOn' | 'isColorsOn' | 'isMusicOn' | 'isVibrationOn', key: string) {
+    this[setting] = !this[setting];
+    await this.setSetting(key, this[setting]);
+
+    // Ha a zene beállítást módosítjuk, indítsuk vagy állítsuk le a zenét a MusicService segítségével
+    if (setting === 'isMusicOn') {
+      if (this.isMusicOn) {
+        this.musicService.playMusic();
+      } else {
+        this.musicService.stopMusic();
+      }
     }
   }
 
   backToStartPage(): void {
     this.router.navigate(['/home']);
-  }
-
-  async toggleSound() {
-    this.isSoundOn = !this.isSoundOn;
-    await Preferences.set({
-      key: 'soundSetting',
-      value: JSON.stringify(this.isSoundOn)
-    });
-  }
-  
-  async loadSoundSetting() {
-    const { value } = await Preferences.get({ key: 'soundSetting' });
-    this.isSoundOn = value ? JSON.parse(value) : true;
-  }
-
-  async toggleColors() {
-    this.isColorsOn = !this.isColorsOn;
-    await Preferences.set({
-      key: 'colorsSetting',
-      value: JSON.stringify(this.isColorsOn)
-    });
-  }
-
-  async loadColorsSetting() {
-    const { value } = await Preferences.get({ key: 'colorsSetting' });
-    this.isColorsOn = value ? JSON.parse(value) : true;
   }
 }

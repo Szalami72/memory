@@ -5,7 +5,14 @@
         align-items: center;
         justify-content: space-around;
     }
-
+.settings-row
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-around;
+}
 .on-off {
     width: 100%;
     display: flex;
@@ -16,7 +23,7 @@
   }
   
   .on-off img {
-    width: 25vw;
+    width: 50%;
   }
   
   .text{
@@ -25,4 +32,4 @@
     margin-top: 2vh;
     text-align: center;
   }
-  
+

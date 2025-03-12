@@ -1,4 +1,3 @@
-
 <div class="profile-container">
     <div class="header">
         <h3>Settings</h3>
@@ -6,29 +5,37 @@
     <div class="line"></div>
 
     <div class="content">
+        <div class="settings-row">
+            <div class="on-off" (click)="toggleSetting('isSoundOn', 'soundSetting')">
+                <img [src]="isSoundOn ? 'assets/images/speaker-on-icon.png' : 'assets/images/speaker-off-icon.png'" alt="sound">
+                <div class="text">{{ isSoundOn ? 'Sound on' : 'Sound off' }}</div>
+            </div>
 
-        <div class="on-off" (click)="toggleSound()">
-            <img [src]="isSoundOn ? 'assets/images/speaker-on-icon.png' : 'assets/images/speaker-off-icon.png'" alt="sound">
-            <div class="text">{{ isSoundOn ? 'Sound on' : 'Sound off' }}</div>
-        </div>
-        
-        <div class="on-off" (click)="toggleColors()">
-            <img [src]="isColorsOn ? 'assets/images/color-scheme-icon.png' : 'assets/images/shapes-icon.png'" alt="colors">
-            <div class="text">{{ isColorsOn ? 'Colors' : 'Shapes' }}</div>
+            <div class="on-off" (click)="toggleSetting('isMusicOn', 'musicSetting')">
+                <img [src]="isMusicOn ? 'assets/images/music-on-icon.png' : 'assets/images/music-off-icon.png'" alt="music">
+                <div class="text">{{ isMusicOn ? 'Music on' : 'Music off' }}</div>
+            </div>
         </div>
 
+        <div class="settings-row">
+            <div class="on-off" (click)="toggleSetting('isVibrationOn', 'vibrationSetting')">
+                <img [src]="isVibrationOn ? 'assets/images/vibration-on-icon.png' : 'assets/images/vibration-off-icon.png'" alt="vibration">
+                <div class="text">{{ isVibrationOn ? 'Vibration on' : 'Vibration off' }}</div>
+            </div>
+
+            <div class="on-off" (click)="toggleSetting('isColorsOn', 'colorsSetting')">
+                <img [src]="isColorsOn ? 'assets/images/color-scheme-icon.png' : 'assets/images/shapes-icon.png'" alt="colors">
+                <div class="text">{{ isColorsOn ? 'Colors' : 'Shapes' }}</div>
+            </div>
+        </div>
     </div>
 
     <div class="footer">
-        
         <div class="line"></div>
         <div class="buttons">
-            <div class="logout-btn">
-                           
+            <div class="back-btn ms-auto" (click)="backToStartPage()">
+                <img src="assets/images/back-icon.png" alt="back-button">
             </div>
-            <div class="back-btn" (click)="backToStartPage()">
-                <img src="assets/images/back-icon.png" alt="back">
         </div>     
     </div>
-</div>
 </div>

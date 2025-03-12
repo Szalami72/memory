@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
-import { catchError } from 'rxjs/operators'; // Importáld a catchError operátort
-import { of, from } from 'rxjs'; // Importáld az of függvényt
+import { catchError } from 'rxjs/operators';
+import { of, from } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { MusicService } from '../../../game/services/music.service';// Igazítsd az elérési utat
+import { Preferences } from '@capacitor/preferences';
 
 @Component({
   selector: 'app-login-buttons',
@@ -13,30 +15,40 @@ import { CommonModule } from '@angular/common';
 })
 export class LoginButtonsComponent implements OnInit {
 
-  loginError: string | null = null; // Változó a hibaüzenet tárolására
+  loginError: string | null = null;
 
-  constructor(public authService: AuthService) {
-    
-   } // Injektáld az AuthService-t
+  constructor(
+    public authService: AuthService,
+    private musicService: MusicService
+  ) { }
 
-  ngOnInit(): void {
-    
+  ngOnInit(): void { }
+
+  // Segéd metódus, amely ellenőrzi a "musicSetting" értékét, és ha engedélyezett, elindítja a zenét.
+  private async checkMusicSettingAndPlay(): Promise<void> {
+    const { value } = await Preferences.get({ key: 'musicSetting' });
+    const isMusicOn = value !== null ? JSON.parse(value) : true;
+    if (isMusicOn) {
+      this.musicService.playMusic();
+    }
   }
 
-loginWithGoogle(): void {
-  this.loginError = null; // Töröld a korábbi hibaüzenetet
-  from(this.authService.loginWithGoogle())
-    .pipe(
-      catchError(error => {
-        this.loginError = 'Login error! Please try it later!'; // Állítsd be a hibaüzenetet
-        console.error('Google Login Error:', error);
-        return of(null); // Fontos, hogy Observable-t adj vissza a catchError-ban, pl. of(null)
-      })
-    )
-    .subscribe(); // Fontos feliratkozni, hogy a Promise lefusson, bár nem várunk értéket
-}
+  async loginWithGoogle(): Promise<void> {
+    await this.checkMusicSettingAndPlay();
+    this.loginError = null;
+    from(this.authService.loginWithGoogle())
+      .pipe(
+        catchError(error => {
+          this.loginError = 'Login error! Please try it later!';
+          console.error('Google Login Error:', error);
+          return of(null);
+        })
+      )
+      .subscribe();
+  }
 
-  loginWithFacebook(): void {
+  async loginWithFacebook(): Promise<void> {
+    await this.checkMusicSettingAndPlay();
     this.loginError = null;
     from(this.authService.loginWithFacebook())
       .pipe(
@@ -49,7 +61,8 @@ loginWithGoogle(): void {
       .subscribe();
   }
 
-  loginAsGuest(): void {
+  async loginAsGuest(): Promise<void> {
+    await this.checkMusicSettingAndPlay();
     this.loginError = null;
     from(this.authService.loginAsGuest())
       .pipe(
