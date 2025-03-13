@@ -1,0 +1,16 @@
+<div class="header-container">
+    <div class="difficulty">Difficulty: {{ difficulty }}</div>
+    <button class="ms-auto long-press-button"
+            (mousedown)="startPress()"
+            (mouseup)="endPress()"
+            (mouseleave)="endPress()"
+            (touchstart)="startPress()"
+            (touchend)="endPress()"
+            (touchcancel)="endPress()">
+      X
+    </button>
+    <!-- A progress bar itt a header-container alján jelenik meg -->
+    <div class="progress-bar" [style.width.%]="progress"></div>
+  </div>
+  
+  

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { of, from } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { MusicService } from '../../../game/services/music.service';// Igazítsd az elérési utat
+import { MusicService } from '../../../game/services/music.service';
 import { Preferences } from '@capacitor/preferences';
 
 @Component({
@@ -24,7 +24,6 @@ export class LoginButtonsComponent implements OnInit {
 
   ngOnInit(): void { }
 
-  // Segéd metódus, amely ellenőrzi a "musicSetting" értékét, és ha engedélyezett, elindítja a zenét.
   private async checkMusicSettingAndPlay(): Promise<void> {
     const { value } = await Preferences.get({ key: 'musicSetting' });
     const isMusicOn = value !== null ? JSON.parse(value) : true;
@@ -33,11 +32,15 @@ export class LoginButtonsComponent implements OnInit {
     }
   }
 
-  async loginWithGoogle(): Promise<void> {
-    await this.checkMusicSettingAndPlay();
+  loginWithGoogle(): void {
     this.loginError = null;
     from(this.authService.loginWithGoogle())
       .pipe(
+        tap(() => {
+          // Ha a bejelentkezés sikeres volt, akkor itt fut le a tap callback,
+          // így meghívhatjuk a zene lejátszását.
+          this.checkMusicSettingAndPlay();
+        }),
         catchError(error => {
           this.loginError = 'Login error! Please try it later!';
           console.error('Google Login Error:', error);
@@ -47,11 +50,15 @@ export class LoginButtonsComponent implements OnInit {
       .subscribe();
   }
 
-  async loginWithFacebook(): Promise<void> {
-    await this.checkMusicSettingAndPlay();
+  loginWithFacebook(): void {
     this.loginError = null;
     from(this.authService.loginWithFacebook())
       .pipe(
+        tap(() => {
+          // Ha a bejelentkezés sikeres volt, akkor itt fut le a tap callback,
+          // így meghívhatjuk a zene lejátszását.
+          this.checkMusicSettingAndPlay();
+        }),
         catchError(error => {
           this.loginError = 'Login error! Please try it later!';
           console.error('Facebook Login Error:', error);
@@ -61,11 +68,15 @@ export class LoginButtonsComponent implements OnInit {
       .subscribe();
   }
 
-  async loginAsGuest(): Promise<void> {
-    await this.checkMusicSettingAndPlay();
+  loginAsGuest(): void {
     this.loginError = null;
     from(this.authService.loginAsGuest())
       .pipe(
+        tap(() => {
+          // Ha a bejelentkezés sikeres volt, akkor itt fut le a tap callback,
+          // így meghívhatjuk a zene lejátszását.
+          this.checkMusicSettingAndPlay();
+        }),
         catchError(error => {
           this.loginError = 'Login error! Please try it later!';
           console.error('Guest Login Error:', error);

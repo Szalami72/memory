@@ -1,0 +1,47 @@
+.header-container {
+    display: flex;
+    position: relative;
+    align-items: center;
+    padding: 0 3vw;
+    background-color: #dc7633;
+    border-bottom: 1px solid #6e2c00;
+    height: 10vh;
+    width: 100%;
+}
+
+.long-press-button {
+    border: none;
+    background-color: #873600;
+    font-size: 5vw;
+    color: #dc7633;
+    font-weight: bold;
+    border: 1px solid #873600;
+    border-radius: 3px;
+    outline: none; /* Megakadályozza a fókuszkeretet */
+    user-select: none; /* Megakadályozza a kijelölést */
+  }
+  
+  .long-press-button:focus,
+  .long-press-button:active {
+    outline: none; /* Eltávolítja a fókuszkeretet */
+    background-color: #873600; /* Megőrzi az eredeti hátteret */
+    color: #dc7633; /* Megőrzi az eredeti színt */
+    box-shadow: none; /* Eltávolítja az esetleges árnyékokat */
+  }
+  
+  .progress-bar {
+    position: absolute;
+    bottom: 0;  /* A container alján jelenik meg */
+    left: 0;
+    height: 2px;
+    background-color: #6e2c00;
+    color: #6e2c00;
+    transition: width 50ms linear;
+    width: 0%;
+  }
+  
+  .difficulty {
+    font-size: 5vw;
+    font-weight: bold;
+    color: #6e2c00;
+  }

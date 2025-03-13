@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authRoutes } from './features/auth/auth.routes';
 import { HomeComponent } from './features/game/components/home/home.component';
 import { GameStartComponent } from './features/game/components/game-start/game-start.component';
-import { GameComponent } from './features/game/game/game.component';
+import { FrameComponent } from './features/game/components-game/frame/frame.component';
 import { SectionComponent } from './features/game/components/section/section.component';
 import { ProfileComponent } from './features/game/components/profile/profile.component';
 import { SettingsComponent } from './features/game/components/settings/settings.component';
@@ -36,7 +36,8 @@ export const routes: Routes = [
     ]
   },
   { 
-    path: 'game', component: GameComponent 
+    path: 'game', component: FrameComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: '',
