@@ -1,5 +1,10 @@
 <div class="header-container">
+
+  <div class="info">
     <div class="difficulty">Difficulty: {{ difficulty }}</div>
+    <div class="level">Level: {{ currentLevel }}</div>
+  </div>
+  
     <button class="ms-auto long-press-button"
             (mousedown)="startPress()"
             (mouseup)="endPress()"
