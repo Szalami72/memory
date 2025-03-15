@@ -1,19 +1,18 @@
 import { Component } from '@angular/core';
 import { CommonModule} from '@angular/common';
 import { AuthService } from '../../../../core/services/auth.service';
-import { Observable } from 'rxjs';
+import { RouterOutlet } from '@angular/router';
 import firebase from 'firebase/compat/app';
 
 
 import { MenuComponent } from '../menu/menu.component';
 import { HeaderComponent } from '../header/header.component';
-import { SectionComponent } from '../section/section.component';  
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ CommonModule,
-     HeaderComponent, SectionComponent, MenuComponent],
+  imports: [CommonModule,
+    HeaderComponent, MenuComponent, RouterOutlet],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })

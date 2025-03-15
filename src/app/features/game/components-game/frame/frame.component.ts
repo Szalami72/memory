@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { HeaderGameComponent } from '../header-game/header-game.component';
-import { SceneGameComponent } from '../scene-game/scene-game.component';
 import { FooterGameComponent } from '../footer-game/footer-game.component';
 
 
@@ -11,7 +10,7 @@ import { FooterGameComponent } from '../footer-game/footer-game.component';
   standalone: true,
   templateUrl: './frame.component.html',
   styleUrls: ['./frame.component.css'],
-  imports: [HeaderGameComponent, SceneGameComponent, FooterGameComponent]
+  imports: [HeaderGameComponent, FooterGameComponent, RouterOutlet]
 })
 export class FrameComponent  {
 

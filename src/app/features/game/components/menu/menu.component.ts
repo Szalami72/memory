@@ -13,6 +13,6 @@ export class MenuComponent {
   constructor(private router: Router) { }
 
   navigateToMenuItem(item: string) {
-    this.router.navigate(['home/section/' + item]);
+    this.router.navigate(['home/' + item]);
   }
 }

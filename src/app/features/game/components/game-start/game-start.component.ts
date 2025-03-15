@@ -18,6 +18,6 @@ export class GameStartComponent {
     // Tároljuk el a kiválasztott nehézséget a szolgáltatásban
     this.difficultyService.difficulty = difficulty;
     // Navigálunk a játék komponenshez (itt akár query paraméter is lehet, vagy csak egy új komponens betöltése)
-    this.router.navigate(['game']);
+    this.router.navigate(['/game/' + difficulty]);
   }
 }

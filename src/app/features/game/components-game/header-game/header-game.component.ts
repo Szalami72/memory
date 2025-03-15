@@ -16,7 +16,7 @@ export class HeaderGameComponent {
   progress = 0; // 0-100%-os progress érték
   pressTimer: any = null;
   pressStartTime: number = 0;
-  holdDuration = 1000; // 2000 ms = 2 másodperc
+  holdDuration = 1000; // 1000 ms = 1 másodperc
  
   constructor(private router: Router, private difficultyService: DifficultyService) { }
 
@@ -50,7 +50,7 @@ export class HeaderGameComponent {
 
   backToStartPage(): void {
     // Itt valósítsd meg a navigációt, például:
-    this.router.navigate(['/home']);
+    this.router.navigate(['']);
     // Vagy bármilyen logikát, ami visszavezeti a játék kezdőoldalára.
     console.log('Kilépés végrehajtva, navigálás a kezdőoldalra.');
   }

@@ -8,3 +8,9 @@
     height: 10vh;
     width: 100%;
 }
+
+.score {
+    font-size: 5vw;
+    font-weight: bold;
+    color: #6e2c00;
+  }
