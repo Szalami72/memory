@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { DifficultyService } from '../../services/difficulty.service';
 import { LevelService } from '../../services/level.service';
+import { MusicService } from '../../services/music.service';
 
 @Component({
   selector: 'app-header-game',
@@ -23,7 +24,10 @@ export class HeaderGameComponent implements OnInit, OnDestroy {
   currentLevel: number = 1;
   private levelSubscription: Subscription | undefined;
 
-  constructor(private router: Router, private difficultyService: DifficultyService, private levelService: LevelService) { }
+  constructor(private router: Router, 
+    private musicService: MusicService, 
+    private difficultyService: DifficultyService, 
+    private levelService: LevelService) { }
 
   ngOnInit(): void {
     this.difficulty = this.difficultyService.difficulty;
@@ -38,6 +42,9 @@ export class HeaderGameComponent implements OnInit, OnDestroy {
     if (this.levelSubscription) {
       this.levelSubscription.unsubscribe();
     }
+    console.log('Aktív hangok:', this.musicService['activeAudios']);
+
+    this.musicService.stopAllSounds();
   }
 
  startPress(): void {
@@ -63,6 +70,8 @@ export class HeaderGameComponent implements OnInit, OnDestroy {
   }
 
   backToStartPage(): void {
+    this.musicService.stopAllSounds();
+
     // Itt valósítsd meg a navigációt, például:
     this.router.navigate(['']);
     // Vagy bármilyen logikát, ami visszavezeti a játék kezdőoldalára.

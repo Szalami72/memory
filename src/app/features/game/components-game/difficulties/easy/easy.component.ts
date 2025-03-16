@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef, QueryList, ViewChildren } fro
 import { GameService } from '../../../services/game.service';
 import { LevelService } from '../../../services/level.service';
 import { ScoreService } from '../../../services/score.service';
+import { MusicService } from '../../../services/music.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -24,6 +25,8 @@ export class EasyComponent implements OnInit, OnDestroy {
   isNextLevel: boolean = false;
   finalScore: number = 0;
 
+  isGameRunning = true; 
+
   level: number = 1;
   lastCorrectClickTime: number | null = null;
   MAX_CLICK_TIME_WINDOW: number = 2000; // 2 másodperc
@@ -36,7 +39,10 @@ export class EasyComponent implements OnInit, OnDestroy {
   clickQueue: number[] = [];
   isProcessingClick: boolean = false;
 
-  constructor(public gameService: GameService, public levelService: LevelService, public scoreService: ScoreService) {}
+  constructor(public gameService: GameService,
+     public levelService: LevelService,
+      public scoreService: ScoreService,
+      private musicService: MusicService) {}
 
   ngOnInit(): void {
     this.resetGameState();
@@ -46,6 +52,7 @@ export class EasyComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     clearInterval(this.countdownInterval);
     clearTimeout(this.gameTimeout);
+    this.isGameRunning = false;
   }
 
   startCountdown(): void {
@@ -92,11 +99,17 @@ export class EasyComponent implements OnInit, OnDestroy {
 
   async highlightSequence(): Promise<void> {
     for (const value of this.correctSequence) {
+
+      if (!this.isGameRunning) {
+        console.log('A játék leállt, leállítom a szekvenciát');
+        return;  // Ha a játék már nem fut, akkor kilépünk
+      }
       const index = value - 1;
       const squareElement = this.squares.toArray()[index]?.nativeElement;
       if (!squareElement) continue;
       const originalClass = squareElement.className;
       const idleClass = originalClass.split(' ').find((cls: string) => cls.endsWith('-idle'));
+      this.playSound(value);
       if (idleClass) {
         const activeClass = idleClass.replace('-idle', '');
         squareElement.className = originalClass.replace(idleClass, activeClass);
@@ -110,6 +123,9 @@ export class EasyComponent implements OnInit, OnDestroy {
   onSquareClick(clickedValue: number): void {
     console.log('Kattintott érték:', clickedValue, 'canClick:', this.canClick, 'isFailed:', this.isFailed);
     if (!this.canClick || this.isFailed) return;
+
+    this.playSound(clickedValue);
+
     // A kattintást hozzáadjuk a queue-hoz
     this.clickQueue.push(clickedValue);
     // Ha nincs éppen folyamatban kattintás feldolgozás, elindítjuk
@@ -228,4 +244,14 @@ export class EasyComponent implements OnInit, OnDestroy {
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  // playSound(value: number): void {
+  //   const audio = new Audio(`../../../../../assets/sounds/${value}.mp3`);
+  //   audio.play();
+  // }
+  
+  playSound(value: number): void {
+    this.musicService.playSound(`../../../../../assets/sounds/${value}.mp3`);
+  }
+  
 }
