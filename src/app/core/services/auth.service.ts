@@ -45,9 +45,11 @@ export class AuthService {
     try {
       const result = await this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
       if (result.user) {
-        this.userSubject.next(result.user);
+        const userId = result.user.uid; // Elérheted az UID-t
         console.log('Sikeres bejelentkezés Google-lel:', result.user);
-        this.router.navigate(['/home']); // Átirányítás a kezdőoldalra
+        console.log('Logged userId:', userId);  // Logolás
+        this.userSubject.next(result.user);
+        this.router.navigate(['/home']);
       } else {
         console.error('Google bejelentkezés sikertelen.');
       }
@@ -56,17 +58,19 @@ export class AuthService {
       throw error;
     }
   }
+  
+  
 
   // ✅ Facebook bejelentkezés
   async loginWithFacebook(): Promise<void> {
     try {
-      const provider = new FacebookAuthProvider();
-      provider.addScope('email');
-      const result = await signInWithPopup(this.auth, provider);
+      // Használjuk a firebase/compat FacebookAuthProvider-t
+      const result = await this.afAuth.signInWithPopup(new firebase.auth.FacebookAuthProvider());
       if (result.user) {
-        const user = this.afAuth.currentUser;
-        this.userSubject.next(await user);
+        const user = result.user;
+        this.userSubject.next(user);
         console.log('Sikeres bejelentkezés Facebookkal:', user);
+        console.log('Logged userId:', user.uid);
         this.router.navigate(['/home']);
       } else {
         console.error('Facebook bejelentkezés sikertelen.');
@@ -76,6 +80,8 @@ export class AuthService {
       throw error;
     }
   }
+  
+  
 
   // ✅ Vendég bejelentkezés
   async loginAsGuest(): Promise<void> {
@@ -119,24 +125,8 @@ export class AuthService {
     return null;
   }
 
-  public getUserEmail(user: firebase.User | null): string | null { // ✅getUserEmail függvény
-    if (!user) {
-      return null; // Ha nincs felhasználó, akkor nincs email cím
-    }
-
-    if (user.email) {
-      return user.email; // Ha közvetlenül van email cím, akkor használjuk azt
-    }
-
-    if (user.providerData && user.providerData.length > 0) {
-      // Végigmegyünk a providerData tömbön, és megkeressük az email címet
-      for (const provider of user.providerData) {
-        if (provider && provider.email) {
-          return provider.email; // Ha találunk email címet provider adatban, akkor használjuk azt
-        }
-      }
-    }
-
-    return null; // Ha semhol nem találunk email címet, akkor null-t adunk vissza
+  getUserId(): string | null {
+    const currentUser = this.userSubject.value; // A currentUser a BehaviorSubject-ből jön
+    return currentUser ? currentUser.uid : null; // Ha van bejelentkezett felhasználó, akkor az ID-t adjuk vissza
   }
 }

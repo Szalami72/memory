@@ -40,9 +40,8 @@ export class LoginButtonsComponent implements OnInit {
     this.loginError = null;
     from(this.authService.loginWithGoogle())
       .pipe(
-        tap((userCredential: any) => {
-          // Bejelentkezés után mentjük az userId-t
-          const userId = userCredential?.user?.uid;
+        tap(() => {
+          const userId = this.authService.getUserId(); // Ez a metódus most a userId-t adja vissza
           if (userId) {
             this.saveUserIdToLocalStorage(userId); // Elmentjük
           }
@@ -56,14 +55,13 @@ export class LoginButtonsComponent implements OnInit {
       )
       .subscribe();
   }
-
+  
   loginWithFacebook(): void {
     this.loginError = null;
     from(this.authService.loginWithFacebook())
       .pipe(
-        tap((userCredential: any) => {
-          // Bejelentkezés után mentjük az userId-t
-          const userId = userCredential?.user?.uid;
+        tap(() => {
+          const userId = this.authService.getUserId(); // Használjuk a getUserId metódust
           if (userId) {
             this.saveUserIdToLocalStorage(userId); // Elmentjük
           }
@@ -87,6 +85,8 @@ export class LoginButtonsComponent implements OnInit {
           const userId = userCredential?.user?.uid;
           if (userId) {
             this.saveUserIdToLocalStorage(userId); // Elmentjük
+          }else{
+            this.saveUserIdToLocalStorage('guest');
           }
           this.checkMusicSettingAndPlay();
         }),
