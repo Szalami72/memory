@@ -32,13 +32,20 @@ export class LoginButtonsComponent implements OnInit {
     }
   }
 
+  private saveUserIdToLocalStorage(userId: string): void {
+    localStorage.setItem('userId', userId); // Elmentjük a localStorage-be
+  }
+
   loginWithGoogle(): void {
     this.loginError = null;
     from(this.authService.loginWithGoogle())
       .pipe(
-        tap(() => {
-          // Ha a bejelentkezés sikeres volt, akkor itt fut le a tap callback,
-          // így meghívhatjuk a zene lejátszását.
+        tap((userCredential: any) => {
+          // Bejelentkezés után mentjük az userId-t
+          const userId = userCredential?.user?.uid;
+          if (userId) {
+            this.saveUserIdToLocalStorage(userId); // Elmentjük
+          }
           this.checkMusicSettingAndPlay();
         }),
         catchError(error => {
@@ -54,9 +61,12 @@ export class LoginButtonsComponent implements OnInit {
     this.loginError = null;
     from(this.authService.loginWithFacebook())
       .pipe(
-        tap(() => {
-          // Ha a bejelentkezés sikeres volt, akkor itt fut le a tap callback,
-          // így meghívhatjuk a zene lejátszását.
+        tap((userCredential: any) => {
+          // Bejelentkezés után mentjük az userId-t
+          const userId = userCredential?.user?.uid;
+          if (userId) {
+            this.saveUserIdToLocalStorage(userId); // Elmentjük
+          }
           this.checkMusicSettingAndPlay();
         }),
         catchError(error => {
@@ -72,9 +82,12 @@ export class LoginButtonsComponent implements OnInit {
     this.loginError = null;
     from(this.authService.loginAsGuest())
       .pipe(
-        tap(() => {
-          // Ha a bejelentkezés sikeres volt, akkor itt fut le a tap callback,
-          // így meghívhatjuk a zene lejátszását.
+        tap((userCredential: any) => {
+          // Bejelentkezés után mentjük az userId-t
+          const userId = userCredential?.user?.uid;
+          if (userId) {
+            this.saveUserIdToLocalStorage(userId); // Elmentjük
+          }
           this.checkMusicSettingAndPlay();
         }),
         catchError(error => {

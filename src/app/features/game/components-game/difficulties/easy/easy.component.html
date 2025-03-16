@@ -8,6 +8,7 @@
         <div class="countdown-number">Fail!</div>
         <p class="level-reached">Reached level: {{ level }}</p>
         <p class="level-reached">Score: {{ finalScore }}</p>
+        <p *ngIf="isNewBestScore" class="level-reached">NEW BEST!</p>
         <p class="new-game-link" (click)="startNewGame()">New game?</p>
     </div>
 

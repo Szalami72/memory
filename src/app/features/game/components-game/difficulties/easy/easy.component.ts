@@ -24,6 +24,7 @@ export class EasyComponent implements OnInit, OnDestroy {
   isFailed: boolean = false;
   isNextLevel: boolean = false;
   finalScore: number = 0;
+  isNewBestScore: boolean = false;
 
   isGameRunning = true; 
 
@@ -101,7 +102,6 @@ export class EasyComponent implements OnInit, OnDestroy {
     for (const value of this.correctSequence) {
 
       if (!this.isGameRunning) {
-        console.log('A játék leállt, leállítom a szekvenciát');
         return;  // Ha a játék már nem fut, akkor kilépünk
       }
       const index = value - 1;
@@ -121,7 +121,6 @@ export class EasyComponent implements OnInit, OnDestroy {
   }
 
   onSquareClick(clickedValue: number): void {
-    console.log('Kattintott érték:', clickedValue, 'canClick:', this.canClick, 'isFailed:', this.isFailed);
     if (!this.canClick || this.isFailed) return;
 
     this.playSound(clickedValue);
@@ -148,7 +147,6 @@ export class EasyComponent implements OnInit, OnDestroy {
       this.processNextClick();
       return;
     }
-    console.log('Várt érték:', expectedValue, 'clickIndex:', this.clickIndex);
     // Frissítjük az állapotot azonnal
     if (clickedValue === expectedValue) {
       this.userSequence.push(clickedValue);
@@ -163,7 +161,6 @@ export class EasyComponent implements OnInit, OnDestroy {
       if (this.userSequence.length === this.correctSequence.length) {
         // Ha a sorozat teljes, letiltjuk a további kattintásokat és szintváltunk
         this.canClick = false;
-        console.log('Helyes sorozat! Szint:', this.level, 'Pontszám:', this.scoreService.getScore());
         this.advanceLevel();
         // Töröljük a queue-t, mert a sorozat végeztével nem érdekelnek további kattintások
         this.clickQueue = [];
@@ -171,7 +168,6 @@ export class EasyComponent implements OnInit, OnDestroy {
         return;
       }
     } else {
-      console.log('Hibás kattintás! Várt:', expectedValue, 'de jött:', clickedValue);
       this.failGame(clickedSquare);
       this.clickQueue = [];
       this.isProcessingClick = false;
@@ -213,11 +209,15 @@ export class EasyComponent implements OnInit, OnDestroy {
     this.canClick = false;
     clickedSquare.classList.add('incorrect');
     this.finalScore = this.scoreService.getScore();
+    
+    // Ellenőrizzük, hogy új rekordot ért el a játékos
+    this.isNewBestScore = this.scoreService.checkPreviousBestScore(this.finalScore);
+  
     setTimeout(() => {
       clickedSquare.classList.remove('incorrect');
-      // Itt további game over logika is elhelyezhető, pl. új játék indításának felajánlása
     }, 1000);
   }
+  
 
   resetGameState(): void {
     this.countdown = 3;
@@ -245,10 +245,6 @@ export class EasyComponent implements OnInit, OnDestroy {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  // playSound(value: number): void {
-  //   const audio = new Audio(`../../../../../assets/sounds/${value}.mp3`);
-  //   audio.play();
-  // }
   
   playSound(value: number): void {
     this.musicService.playSound(`../../../../../assets/sounds/${value}.mp3`);

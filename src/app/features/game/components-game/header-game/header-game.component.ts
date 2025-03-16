@@ -42,9 +42,6 @@ export class HeaderGameComponent implements OnInit, OnDestroy {
     if (this.levelSubscription) {
       this.levelSubscription.unsubscribe();
     }
-    console.log('Aktív hangok:', this.musicService['activeAudios']);
-
-    this.musicService.stopAllSounds();
   }
 
  startPress(): void {
@@ -70,8 +67,7 @@ export class HeaderGameComponent implements OnInit, OnDestroy {
   }
 
   backToStartPage(): void {
-    this.musicService.stopAllSounds();
-
+   
     // Itt valósítsd meg a navigációt, például:
     this.router.navigate(['']);
     // Vagy bármilyen logikát, ami visszavezeti a játék kezdőoldalára.
