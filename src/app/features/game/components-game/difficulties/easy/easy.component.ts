@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy,  ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { GameService } from '../../../services/game.service';
 import { LevelService } from '../../../services/level.service';
-import { CommonModule } from '@angular/common'; // Szükséges az *ngIf-hez
+import { ScoreService } from '../../../services/score.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-scene-game',
   standalone: true,
-  imports: [CommonModule], // Add hozzá a CommonModule-t
+  imports: [CommonModule],
   templateUrl: './easy.component.html',
   styleUrl: './easy.component.css'
 })
@@ -15,140 +16,216 @@ export class EasyComponent implements OnInit, OnDestroy {
   countdownInterval: any;
   isCountingDown: boolean = true;
 
-  tilesArray: number[] = [];
   correctSequence: number[] = [];
   userSequence: number[] = [];
-  clickIndex: number = 0; // A felhasználó aktuális kattintásának indexe
-  canClick: boolean = false; // Jelzi, hogy a felhasználó kattinthat-e
-  isFailed: boolean = false; // Jelzi, hogy a játék elveszett-e
-  isNextLevel: boolean = false; 
+  clickIndex: number = 0;
+  canClick: boolean = false;
+  isFailed: boolean = false;
+  isNextLevel: boolean = false;
+  finalScore: number = 0;
 
   level: number = 1;
+  lastCorrectClickTime: number | null = null;
+  MAX_CLICK_TIME_WINDOW: number = 2000; // 2 másodperc
 
   private gameTimeout: any;
   
   @ViewChildren('square') squares!: QueryList<ElementRef>;
 
-  constructor(public gameService: GameService, public levelService: LevelService) { }
+  // Gyors kattintások kezeléséhez
+  clickQueue: number[] = [];
+  isProcessingClick: boolean = false;
+
+  constructor(public gameService: GameService, public levelService: LevelService, public scoreService: ScoreService) {}
 
   ngOnInit(): void {
-    this.tilesArray = [];
-    this.tilesArray = [];
-    this.correctSequence = [];
-    this.userSequence = [];
-    this.clickIndex = 0;
-    this.canClick = false;
-    this.isFailed = false; // Inicializáljuk a játék elején
-    this.isNextLevel = false;
-    this.levelService.setLevel(this.level);
-    
-
+    this.resetGameState();
     this.startCountdown();
   }
 
   ngOnDestroy(): void {
     clearInterval(this.countdownInterval);
-    clearTimeout(this.gameTimeout); // Fontos a timeout törlése is
+    clearTimeout(this.gameTimeout);
   }
 
   startCountdown(): void {
+    // Visszaszámlálás alatt ne lehessen kattintani
+    this.canClick = false;
     this.countdownInterval = setInterval(() => {
       if (typeof this.countdown === 'number') {
         this.countdown--;
         if (this.countdown < 1) {
-          this.countdown = 'Start'; // Ha eléri a 0-t, állítsd 'Start'-ra
+          this.countdown = 'Start';
+          clearInterval(this.countdownInterval);
           setTimeout(() => {
-            this.isCountingDown = false; // Kicsit később tüntesd el a visszaszámlálást
-            clearInterval(this.countdownInterval); // Állítsd le az intervallumot
+            this.isCountingDown = false;
             this.startGame();
-          }, 100); // Például 1 másodperc múlva tűnjön el a 'Start'
+          }, 1000);
         }
       }
-    }, 100); // 1000 milliszekundum = 1 másodperc
+    }, 1000);
   }
 
   async startGame(): Promise<void> {
-    this.levelService.setLevel(this.level); 
+    this.levelService.setLevel(this.level);
     this.isFailed = false;
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    if (this.level === 1) {
-            this.correctSequence = [this.gameService.getRandomNumberWithoutFive()];
-          } else {
-            this.correctSequence.push(this.gameService.getRandomNumberWithoutFive());
-          }
-
+    this.lastCorrectClickTime = null;
     this.userSequence = [];
     this.clickIndex = 0;
+    // Ürítjük a queue-t, illetve leállítjuk az esetleges folyamatban lévő kattintásfeldolgozást
+    this.clickQueue = [];
+    this.isProcessingClick = false;
     this.canClick = false;
+    await this.delay(1000);
 
-    for (const value of this.correctSequence) { // Highlight based on the generated sequence
-      const index = value - 1;
-      if (this.squares && this.squares.toArray().length > index && index >= 0) {
-        const squareElement = this.squares.toArray()[index].nativeElement;
-        const originalClassName = squareElement.className;
-        const idleClassToRemove = originalClassName.split(' ').find((className: string) => className.endsWith('-idle'));
-
-        if (idleClassToRemove) {
-          const activeClass = idleClassToRemove.replace('-idle', '');
-          squareElement.className = originalClassName.replace(idleClassToRemove, activeClass);
-
-          await new Promise(resolve => setTimeout(resolve, 1000));
-
-          squareElement.className = originalClassName;
-
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
-      }
+    if (this.level === 1) {
+      this.correctSequence = [this.gameService.getRandomNumberWithoutFive()];
+      this.scoreService.resetScore();
+    } else {
+      this.correctSequence.push(this.gameService.getRandomNumberWithoutFive());
     }
 
+    await this.highlightSequence();
+    // Miután a sorozat kijelző animációja véget ért, engedélyezzük a kattintásokat
     this.canClick = true;
   }
 
-  onSquareClick(clickedValue: number): void {
-    if (!this.canClick || this.isFailed) {
-      return;
-    }
-
-    const expectedValue = this.correctSequence[this.clickIndex];
-    const clickedSquare = this.squares.toArray()[clickedValue - 1].nativeElement;
-
-    if (clickedValue === expectedValue) {
-      this.userSequence.push(clickedValue);
-      this.clickIndex++;
-
-      clickedSquare.classList.add('correct');
-      setTimeout(() => {
-        clickedSquare.classList.remove('correct');
-      }, 300);
-
-      if (this.userSequence.length === this.correctSequence.length) {
-        this.canClick = false;
-        console.log('Helyes sorozat! Jelenlegi szint:', this.level);
-        this.isNextLevel = true;
-        this.level++;
-        this.levelService.setLevel(this.level); 
-        setTimeout(() => {
-          this.isNextLevel = false;
-          this.startGame();
-        }, 1500);
+  async highlightSequence(): Promise<void> {
+    for (const value of this.correctSequence) {
+      const index = value - 1;
+      const squareElement = this.squares.toArray()[index]?.nativeElement;
+      if (!squareElement) continue;
+      const originalClass = squareElement.className;
+      const idleClass = originalClass.split(' ').find((cls: string) => cls.endsWith('-idle'));
+      if (idleClass) {
+        const activeClass = idleClass.replace('-idle', '');
+        squareElement.className = originalClass.replace(idleClass, activeClass);
+        await this.delay(1000);
+        squareElement.className = originalClass;
+        await this.delay(500);
       }
-    } else {
-      this.isFailed = true;
-      this.canClick = false;
-      console.log('Hibás kattintás! Fail! Elért szint:', this.level);
-      clickedSquare.classList.add('incorrect');
-      setTimeout(() => {
-        clickedSquare.classList.remove('incorrect');
-      }, 1000);
     }
   }
 
-  startNewGame(): void {
-    this.isFailed = false;
+  onSquareClick(clickedValue: number): void {
+    console.log('Kattintott érték:', clickedValue, 'canClick:', this.canClick, 'isFailed:', this.isFailed);
+    if (!this.canClick || this.isFailed) return;
+    // A kattintást hozzáadjuk a queue-hoz
+    this.clickQueue.push(clickedValue);
+    // Ha nincs éppen folyamatban kattintás feldolgozás, elindítjuk
+    if (!this.isProcessingClick) {
+      this.processNextClick();
+    }
+  }
+
+  async processNextClick(): Promise<void> {
+    if (this.clickQueue.length === 0) {
+      this.isProcessingClick = false;
+      return;
+    }
+    this.isProcessingClick = true;
+    const clickedValue = this.clickQueue.shift()!;
+    const expectedValue = this.correctSequence[this.clickIndex];
+    const clickedSquare = this.squares.toArray()[clickedValue - 1]?.nativeElement;
+    if (!clickedSquare) {
+      this.isProcessingClick = false;
+      this.processNextClick();
+      return;
+    }
+    console.log('Várt érték:', expectedValue, 'clickIndex:', this.clickIndex);
+    // Frissítjük az állapotot azonnal
+    if (clickedValue === expectedValue) {
+      this.userSequence.push(clickedValue);
+      this.clickIndex++;
+      this.updateScore();
+      // Azonnali vizuális visszajelzés
+      clickedSquare.classList.add('correct');
+      // Várunk a visszajelzés animációjára
+      await this.delay(300);
+      clickedSquare.classList.remove('correct');
+
+      if (this.userSequence.length === this.correctSequence.length) {
+        // Ha a sorozat teljes, letiltjuk a további kattintásokat és szintváltunk
+        this.canClick = false;
+        console.log('Helyes sorozat! Szint:', this.level, 'Pontszám:', this.scoreService.getScore());
+        this.advanceLevel();
+        // Töröljük a queue-t, mert a sorozat végeztével nem érdekelnek további kattintások
+        this.clickQueue = [];
+        this.isProcessingClick = false;
+        return;
+      }
+    } else {
+      console.log('Hibás kattintás! Várt:', expectedValue, 'de jött:', clickedValue);
+      this.failGame(clickedSquare);
+      this.clickQueue = [];
+      this.isProcessingClick = false;
+      return;
+    }
+    this.isProcessingClick = false;
+    // Ha maradt még kattintás a queue-ban, folytatjuk a feldolgozást
+    if (this.clickQueue.length > 0 && this.canClick && !this.isFailed) {
+      this.processNextClick();
+    }
+  }
+
+  updateScore(): void {
+    const currentTime = Date.now();
+    let score = 100;
+    if (this.lastCorrectClickTime !== null) {
+      const elapsedTime = currentTime - this.lastCorrectClickTime;
+      if (elapsedTime < this.MAX_CLICK_TIME_WINDOW) {
+        const remainingTime = this.MAX_CLICK_TIME_WINDOW - elapsedTime;
+        score = Math.round(100 * (1 + remainingTime / this.MAX_CLICK_TIME_WINDOW));
+      }
+    }
+    this.scoreService.incrementScore(score);
+    this.lastCorrectClickTime = currentTime;
+  }
+
+  advanceLevel(): void {
+    this.isNextLevel = true;
+    this.level++;
+    this.levelService.setLevel(this.level);
+    setTimeout(() => {
+      this.isNextLevel = false;
+      this.startGame();
+    }, 1500);
+  }
+
+  failGame(clickedSquare: any): void {
+    this.isFailed = true;
+    this.canClick = false;
+    clickedSquare.classList.add('incorrect');
+    this.finalScore = this.scoreService.getScore();
+    setTimeout(() => {
+      clickedSquare.classList.remove('incorrect');
+      // Itt további game over logika is elhelyezhető, pl. új játék indításának felajánlása
+    }, 1000);
+  }
+
+  resetGameState(): void {
+    this.countdown = 3;
+    this.isCountingDown = true;
+    this.correctSequence = [];
     this.userSequence = [];
     this.clickIndex = 0;
+    this.canClick = false;
+    this.isFailed = false;
+    this.isNextLevel = false;
+    this.level = 1;
+    this.lastCorrectClickTime = null;
+    this.clickQueue = [];
+    this.isProcessingClick = false;
+  }
+  
+  startNewGame(): void {
+    this.resetGameState();
     this.levelService.setLevel(this.level);
-    this.startGame();
+    this.scoreService.resetScore();
+    this.startCountdown();
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

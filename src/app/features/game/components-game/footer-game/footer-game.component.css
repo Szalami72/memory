@@ -9,7 +9,7 @@
     width: 100%;
 }
 
-.score {
+.score, .best-score {
     font-size: 5vw;
     font-weight: bold;
     color: #6e2c00;

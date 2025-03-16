@@ -1,4 +1,5 @@
 <div class="scene-container">
+
     <div *ngIf="isCountingDown" class="countdown-overlay">
         <div class="countdown-number">{{ countdown }}</div>
     </div>
@@ -6,15 +7,16 @@
     <div *ngIf="isFailed" class="countdown-overlay">
         <div class="countdown-number">Fail!</div>
         <p class="level-reached">Reached level: {{ level }}</p>
+        <p class="level-reached">Score: {{ finalScore }}</p>
         <p class="new-game-link" (click)="startNewGame()">New game?</p>
     </div>
 
     <div *ngIf="isNextLevel" class="countdown-overlay">
-        <div class="next-level">New level: {{level}}</div>
+        <div class="next-level">Level: {{level}}</div>
     </div>
 
 
-    <div class="square-container">
+    <div class="square-container" [ngClass]="{'border-red': !canClick, 'border-green': canClick}">
         <div class="square red-idle" #square data-value="1" (click)="onSquareClick(1)"></div>
         <div class="square green-idle" #square data-value="2" (click)="onSquareClick(2)"></div>
         <div class="square blue-idle" #square data-value="3" (click)="onSquareClick(3)"></div>
