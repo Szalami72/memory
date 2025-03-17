@@ -44,20 +44,22 @@ export class HomeComponent implements OnInit {
       return;
     }
   
+    // Egyedi kulcs generálása a localStorage számára
+    const localStorageKey = `bestScore_${userId}`;
+    
     try {
       // Firestore dokumentum lekérése
       const userDocSnapshot = await firstValueFrom(this.firestore.collection('users').doc(userId).get());
       console.log('Firestore document snapshot:', userDocSnapshot);
   
-      // Biztonságos típuskezelés az adatokhoz
       const userData = userDocSnapshot.data() as UserData | undefined;
       console.log('UserData from Firestore:', userData);
   
       const firestoreBestScore = userData?.bestScore || 0;
       console.log('Firestore best score:', firestoreBestScore);
   
-      const localBestScore = parseInt(localStorage.getItem('bestScore') || '0', 10);
-      console.log('Local best score:', localBestScore);
+      const localBestScore = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
+      console.log('Local best score for user:', localBestScore);
   
       if (localBestScore > firestoreBestScore) {
         console.log('Local best score is greater than Firestore best score. Updating Firestore...');
@@ -65,7 +67,7 @@ export class HomeComponent implements OnInit {
         console.log('Offline best score synced to Firestore:', localBestScore);
       } else if (firestoreBestScore > localBestScore) {
         console.log('Firestore best score is greater than local best score. Updating localStorage and subject...');
-        localStorage.setItem('bestScore', firestoreBestScore.toString());
+        localStorage.setItem(localStorageKey, firestoreBestScore.toString());
         this.scoreService.bestScoreSubject.next(firestoreBestScore);
         console.log('Local best score updated from Firestore:', firestoreBestScore);
       } else {
@@ -75,4 +77,5 @@ export class HomeComponent implements OnInit {
       console.error('Error syncing best score with Firestore:', error);
     }
   }
+  
 }

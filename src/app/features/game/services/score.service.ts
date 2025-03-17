@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, of } from 'rxjs';
-import { AngularFirestore } from '@angular/fire/compat/firestore'; // Firebase Firestore importálása
-import { AuthService } from '../../../core/services/auth.service';// AuthService importálása a felhasználó azonosításához
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +10,12 @@ export class ScoreService {
   private scoreSubject = new BehaviorSubject<number>(0);
   score$ = this.scoreSubject.asObservable();
 
-  public bestScoreSubject = new BehaviorSubject<number>(parseInt(localStorage.getItem('bestScore') || '0', 10));
-  bestScore$ = this.bestScoreSubject.asObservable();  // Observable a legjobb pontszámhoz
+  public bestScoreSubject = new BehaviorSubject<number>(0);
+  bestScore$ = this.bestScoreSubject.asObservable();
 
-  constructor(private firestore: AngularFirestore, private authService: AuthService) { }
+  constructor(private firestore: AngularFirestore, private authService: AuthService) {
+    this.initBestScore(); // Inicializáláskor betöltjük a localStorage-ból az aktuális user adatait
+  }
 
   incrementScore(points: number): void {
     this.scoreSubject.next(this.scoreSubject.getValue() + points);
@@ -27,48 +29,57 @@ export class ScoreService {
     return this.scoreSubject.getValue();
   }
 
+  private initBestScore(): void {
+    const userId = this.authService.getUserId();
+    if (userId && userId !== 'guest') {
+      const localStorageKey = `bestScore_${userId}`;
+      const localBestScore = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
+      this.bestScoreSubject.next(localBestScore);
+    }
+  }
+
   getBestScore(): Observable<number> {
     const userId = this.authService.getUserId();
     if (userId && userId !== 'guest') {
+      const localStorageKey = `bestScore_${userId}`;
       return this.firestore.collection('users').doc(userId).valueChanges().pipe(
-        map((userData: any) => userData?.bestScore || parseInt(localStorage.getItem('bestScore') || '0', 10))
+        map((userData: any) => userData?.bestScore || parseInt(localStorage.getItem(localStorageKey) || '0', 10))
       );
     } else {
-      // Ha nincs bejelentkezett felhasználó, a localStorage-ból vesszük
-      return of(parseInt(localStorage.getItem('bestScore') || '0', 10));
+      return of(0);
     }
   }
-  
 
   checkPreviousBestScore(newScore: number): boolean {
-    const bestScore = this.bestScoreSubject.getValue();
     const userId = this.authService.getUserId();
-    
+    if (!userId || userId === 'guest') {
+      console.log('Guest mode - best score is not saved.');
+      return false;
+    }
+
+    const localStorageKey = `bestScore_${userId}`;
+    const bestScore = this.bestScoreSubject.getValue();
+
     if (newScore > bestScore) {
       // Frissítjük a localStorage-ot
-      localStorage.setItem('bestScore', newScore.toString());
+      localStorage.setItem(localStorageKey, newScore.toString());
       this.bestScoreSubject.next(newScore);
-  
-      if (userId && userId !== 'guest') {
-        // Firestore-ból lekérjük a legjobb pontszámot
-        this.firestore.collection('users').doc(userId).get().subscribe(userDoc => {
-          const firestoreBestScore = userDoc.exists ? (userDoc.data() as any).bestScore || 0 : 0;
-          
-          // Ha a helyi pontszám nagyobb, mint a Firestore-ban tárolt, mentjük
-          if (newScore > firestoreBestScore) {
-            this.saveBestScoreToDatabase(userId, newScore);
-          }
-        }, error => {
-          console.error('Error fetching Firestore best score:', error);
-        });
-      }
+
+      // Firestore-ból lekérjük a legjobb pontszámot és frissítjük, ha szükséges
+      this.firestore.collection('users').doc(userId).get().subscribe(userDoc => {
+        const firestoreBestScore = userDoc.exists ? (userDoc.data() as any).bestScore || 0 : 0;
+        
+        if (newScore > firestoreBestScore) {
+          this.saveBestScoreToDatabase(userId, newScore);
+        }
+      }, error => {
+        console.error('Error fetching Firestore best score:', error);
+      });
+
       return true;
     }
     return false;
   }
-  
-  
-  
 
   async saveBestScoreToDatabase(userId: string, score: number): Promise<void> {
     try {
@@ -81,5 +92,4 @@ export class ScoreService {
       console.error('Error saving best score to Firestore:', error);
     }
   }
-  
 }
