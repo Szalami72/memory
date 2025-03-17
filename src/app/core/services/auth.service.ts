@@ -15,6 +15,10 @@ export class AuthService {
   public isLoggedInSubject = new BehaviorSubject<boolean>(false);
   public isLoggedIn$: Observable<boolean> = this.isLoggedInSubject.asObservable();
 
+  private isGuestSubject = new BehaviorSubject<boolean>(false);
+  public isGuest$ = this.isGuestSubject.asObservable();
+
+
   ngOnInit() {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -89,6 +93,8 @@ export class AuthService {
       const result = await this.afAuth.signInAnonymously();
       if (result.user) {
         this.userSubject.next(result.user);
+        this.isGuestSubject.next(true); // Beállítjuk, hogy vendég
+        localStorage.setItem('isGuest', 'true'); // 🔴 Tároljuk a vendég állapotot
         console.log('Sikeres vendég bejelentkezés:', result.user);
         this.router.navigate(['/home']);
       } else {
@@ -99,6 +105,7 @@ export class AuthService {
       throw error;
     }
   }
+  
 
   // ✅ Kijelentkezés
   async logout(): Promise<void> {
@@ -106,13 +113,16 @@ export class AuthService {
       await this.afAuth.signOut();
       this.userSubject.next(null);
       this.isLoggedInSubject.next(false);
+      this.isGuestSubject.next(false); // Vendég állapot visszaállítása
+      localStorage.removeItem('isGuest'); // 🔴 Töröljük a tárolt vendég állapotot
       console.log('Sikeres kijelentkezés!');
-      this.router.navigate(['auth/login']); // Átirányítás a bejelentkező oldalra
+      this.router.navigate(['auth/login']);
     } catch (error) {
       console.error('Hiba a kijelentkezés során:', error);
       throw error;
     }
   }
+  
 
   // Segédfüggvény a Google hitelesítési adat beszerzéséhez a meglévő fiókhoz (javított verzió)
   private async getCredentialForExistingAccount(user: firebase.User): Promise<any> { // 👈 Eltávolítottuk a providerId paramétert
@@ -126,7 +136,13 @@ export class AuthService {
   }
 
   getUserId(): string | null {
-    const currentUser = this.userSubject.value; // A currentUser a BehaviorSubject-ből jön
-    return currentUser ? currentUser.uid : null; // Ha van bejelentkezett felhasználó, akkor az ID-t adjuk vissza
+    const isGuest = localStorage.getItem('isGuest') === 'true'; // 🔴 Ellenőrizzük, hogy vendég-e
+    if (isGuest) {
+      return 'guest';
+    }
+    
+    const currentUser = this.userSubject.value;
+    return currentUser ? currentUser.uid : null;
   }
+  
 }

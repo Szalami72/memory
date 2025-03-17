@@ -15,28 +15,39 @@ export class FooterGameComponent implements OnInit, OnDestroy {
   bestScore: number = 0;
   private scoreSubscription: Subscription | undefined;
   private bestScoreSubscription: Subscription | undefined;
+  private difficultySubscription: Subscription | undefined;
 
-  constructor(private scoreService: ScoreService, private difficultyService: DifficultyService ) { }
+  constructor(
+    private scoreService: ScoreService,
+    private difficultyService: DifficultyService
+  ) {}
 
   ngOnInit(): void {
-    // A legjobb pontszám követése
-    const difficulty = this.difficultyService.difficulty; // Replace with the correct difficulty level
-    this.bestScoreSubscription = this.scoreService.getBestScore(difficulty).subscribe(bestScore => {
-      this.bestScore = bestScore;
+    // Figyeljük a nehézségi szint változását, és ennek megfelelően frissítjük a bestScore értékét
+    this.difficultySubscription = this.difficultyService.difficulty$.subscribe(difficulty => {
+      console.log('Difficulty changed:', difficulty);
+      this.loadBestScore(difficulty);
     });
-  
-    // Az aktuális pontszám követése
+
+    // Figyeljük az aktuális pontszám változását
     this.scoreSubscription = this.scoreService.score$.subscribe(score => {
       this.currentScore = score;
     });
   }
 
+  private loadBestScore(difficulty: string): void {
+    // Előző feliratkozás leállítása, ha volt
+    this.bestScoreSubscription?.unsubscribe();
+    
+    this.bestScoreSubscription = this.scoreService.getBestScore(difficulty).subscribe(bestScore => {
+      console.log(`Best score for difficulty ${difficulty}:`, bestScore);
+      this.bestScore = bestScore;
+    });
+  }
+
   ngOnDestroy(): void {
-    if (this.scoreSubscription) {
-      this.scoreSubscription.unsubscribe();
-    }
-    if (this.bestScoreSubscription) {
-      this.bestScoreSubscription.unsubscribe();
-    }
+    this.scoreSubscription?.unsubscribe();
+    this.bestScoreSubscription?.unsubscribe();
+    this.difficultySubscription?.unsubscribe();
   }
 }

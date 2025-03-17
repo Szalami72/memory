@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DifficultyService {
-  private _difficulty: string = 'easy';
-
-  set difficulty(value: string) {
-    this._difficulty = value;
-  }
+  private difficultySubject = new BehaviorSubject<string>('easy'); // Kezdeti érték
+  difficulty$ = this.difficultySubject.asObservable();
 
   get difficulty(): string {
-    return this._difficulty;
+    return this.difficultySubject.getValue();
+  }
+
+  set difficulty(value: string) {
+    this.difficultySubject.next(value);
   }
 }

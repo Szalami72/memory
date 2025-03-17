@@ -38,12 +38,11 @@ export class HomeComponent implements OnInit {
     console.log('syncBestScoresWithFirestore called. userId:', userId);
     
     if (!userId || userId === 'guest') {
-      console.log('No valid userId or user is guest. Exiting sync.');
+      console.log('Guest user detected. Syncing only with localStorage.');
       return;
     }
   
     try {
-      // Firestore dokumentum lekérése
       const userDocSnapshot = await firstValueFrom(this.firestore.collection('users').doc(userId).get());
       console.log('Firestore document snapshot:', userDocSnapshot);
   
@@ -54,7 +53,7 @@ export class HomeComponent implements OnInit {
       console.log('Firestore best scores:', firestoreBestScores);
   
       const difficulties = ['easy', 'hard', 'extreme', 'challenge'];
-      
+  
       difficulties.forEach((difficulty) => {
         const localStorageKey = `bestScore_${userId}_${difficulty}`;
         const localBestScore = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
@@ -76,4 +75,5 @@ export class HomeComponent implements OnInit {
       console.error('Error syncing best scores with Firestore:', error);
     }
   }
+  
 }

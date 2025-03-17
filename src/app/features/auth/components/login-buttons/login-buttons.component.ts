@@ -84,9 +84,7 @@ export class LoginButtonsComponent implements OnInit {
           // Bejelentkezés után mentjük az userId-t
           const userId = userCredential?.user?.uid;
           if (userId) {
-            this.saveUserIdToLocalStorage(userId); // Elmentjük
-          }else{
-            this.saveUserIdToLocalStorage('guest');
+            this.saveUserIdToLocalStorage('guest'); // Elmentjük
           }
           this.checkMusicSettingAndPlay();
         }),

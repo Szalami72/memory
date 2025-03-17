@@ -46,20 +46,24 @@ export class ScoreService {
   }
 
   getBestScore(difficulty: string): Observable<number> {
-    const userId = this.authService.getUserId();
-    if (userId && userId !== 'guest') {
-      return this.firestore.collection('users').doc(userId).valueChanges().pipe(
-        map((userData: any) => userData?.[difficulty] || this.bestScoreSubjects[difficulty].getValue())
-      );
-    } else {
-      return of(this.bestScoreSubjects[difficulty].getValue());
-    }
+  const userId = this.authService.getUserId();
+
+  if (!userId || userId === 'guest') {
+    //return of(this.bestScoreSubjects[difficulty].getValue()); // Csak localStorage
+    return this.bestScoreSubjects[difficulty].asObservable();
+
   }
+
+  return this.firestore.collection('users').doc(userId).valueChanges().pipe(
+    map((userData: any) => userData?.[difficulty] || this.bestScoreSubjects[difficulty].getValue())
+  );
+}
+
 
   checkPreviousBestScore(newScore: number, difficulty: string): boolean {
     const bestScore = this.bestScoreSubjects[difficulty].getValue();
     const userId = this.authService.getUserId();
-    
+  
     if (newScore > bestScore) {
       localStorage.setItem(this.getLocalStorageKey(difficulty), newScore.toString());
       this.bestScoreSubjects[difficulty].next(newScore);
@@ -79,6 +83,7 @@ export class ScoreService {
     }
     return false;
   }
+  
 
   async saveBestScoreToDatabase(userId: string, score: number, difficulty: string): Promise<void> {
     try {
