@@ -10,11 +10,27 @@ export class ScoreService {
   private scoreSubject = new BehaviorSubject<number>(0);
   score$ = this.scoreSubject.asObservable();
 
-  public bestScoreSubject = new BehaviorSubject<number>(0);
-  bestScore$ = this.bestScoreSubject.asObservable();
+  public bestScoreSubjects: { [key: string]: BehaviorSubject<number> } = {
+    easy: new BehaviorSubject<number>(0),
+    hard: new BehaviorSubject<number>(0),
+    extreme: new BehaviorSubject<number>(0),
+    challenge: new BehaviorSubject<number>(0),
+  };
 
   constructor(private firestore: AngularFirestore, private authService: AuthService) {
-    this.initBestScore(); // Inicializáláskor betöltjük a localStorage-ból az aktuális user adatait
+    this.loadBestScoresFromLocalStorage();
+  }
+
+  private getLocalStorageKey(difficulty: string): string {
+    const userId = this.authService.getUserId();
+    return `bestScore_${userId}_${difficulty}`;
+  }
+
+  private loadBestScoresFromLocalStorage(): void {
+    Object.keys(this.bestScoreSubjects).forEach(difficulty => {
+      const storedScore = parseInt(localStorage.getItem(this.getLocalStorageKey(difficulty)) || '0', 10);
+      this.bestScoreSubjects[difficulty].next(storedScore);
+    });
   }
 
   incrementScore(points: number): void {
@@ -29,65 +45,48 @@ export class ScoreService {
     return this.scoreSubject.getValue();
   }
 
-  private initBestScore(): void {
+  getBestScore(difficulty: string): Observable<number> {
     const userId = this.authService.getUserId();
     if (userId && userId !== 'guest') {
-      const localStorageKey = `bestScore_${userId}`;
-      const localBestScore = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
-      this.bestScoreSubject.next(localBestScore);
-    }
-  }
-
-  getBestScore(): Observable<number> {
-    const userId = this.authService.getUserId();
-    if (userId && userId !== 'guest') {
-      const localStorageKey = `bestScore_${userId}`;
       return this.firestore.collection('users').doc(userId).valueChanges().pipe(
-        map((userData: any) => userData?.bestScore || parseInt(localStorage.getItem(localStorageKey) || '0', 10))
+        map((userData: any) => userData?.[difficulty] || this.bestScoreSubjects[difficulty].getValue())
       );
     } else {
-      return of(0);
+      return of(this.bestScoreSubjects[difficulty].getValue());
     }
   }
 
-  checkPreviousBestScore(newScore: number): boolean {
+  checkPreviousBestScore(newScore: number, difficulty: string): boolean {
+    const bestScore = this.bestScoreSubjects[difficulty].getValue();
     const userId = this.authService.getUserId();
-    if (!userId || userId === 'guest') {
-      console.log('Guest mode - best score is not saved.');
-      return false;
-    }
-
-    const localStorageKey = `bestScore_${userId}`;
-    const bestScore = this.bestScoreSubject.getValue();
-
+    
     if (newScore > bestScore) {
-      // Frissítjük a localStorage-ot
-      localStorage.setItem(localStorageKey, newScore.toString());
-      this.bestScoreSubject.next(newScore);
-
-      // Firestore-ból lekérjük a legjobb pontszámot és frissítjük, ha szükséges
-      this.firestore.collection('users').doc(userId).get().subscribe(userDoc => {
-        const firestoreBestScore = userDoc.exists ? (userDoc.data() as any).bestScore || 0 : 0;
-        
-        if (newScore > firestoreBestScore) {
-          this.saveBestScoreToDatabase(userId, newScore);
-        }
-      }, error => {
-        console.error('Error fetching Firestore best score:', error);
-      });
-
+      localStorage.setItem(this.getLocalStorageKey(difficulty), newScore.toString());
+      this.bestScoreSubjects[difficulty].next(newScore);
+  
+      if (userId && userId !== 'guest') {
+        this.firestore.collection('users').doc(userId).get().subscribe(userDoc => {
+          const firestoreBestScore = userDoc.exists ? (userDoc.data() as any)[difficulty] || 0 : 0;
+          
+          if (newScore > firestoreBestScore) {
+            this.saveBestScoreToDatabase(userId, newScore, difficulty);
+          }
+        }, error => {
+          console.error('Error fetching Firestore best score:', error);
+        });
+      }
       return true;
     }
     return false;
   }
 
-  async saveBestScoreToDatabase(userId: string, score: number): Promise<void> {
+  async saveBestScoreToDatabase(userId: string, score: number, difficulty: string): Promise<void> {
     try {
-      console.log('Saving score for user:', userId, 'score:', score);
+      console.log(`Saving score for user: ${userId}, difficulty: ${difficulty}, score: ${score}`);
       await this.firestore.collection('users').doc(userId).set({
-        bestScore: score
+        [difficulty]: score
       }, { merge: true });
-      console.log('Best score saved to Firestore:', score);
+      console.log(`Best score saved to Firestore for ${difficulty}: ${score}`);
     } catch (error) {
       console.error('Error saving best score to Firestore:', error);
     }

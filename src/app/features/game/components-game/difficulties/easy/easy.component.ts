@@ -211,7 +211,7 @@ export class EasyComponent implements OnInit, OnDestroy {
     this.finalScore = this.scoreService.getScore();
     
     // Ellenőrizzük, hogy új rekordot ért el a játékos
-    this.isNewBestScore = this.scoreService.checkPreviousBestScore(this.finalScore);
+    this.isNewBestScore = this.scoreService.checkPreviousBestScore(this.finalScore, 'easy');
   
     setTimeout(() => {
       clickedSquare.classList.remove('incorrect');
