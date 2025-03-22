@@ -1,79 +1,62 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../../core/services/auth.service';
-import { ScoreService } from '../../services/score.service';
-import { RouterOutlet } from '@angular/router';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { firstValueFrom } from 'rxjs';
-
-import { MenuComponent } from '../menu/menu.component';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { RouterModule } from '@angular/router';
+import { SettingsService } from '../../services/settings.service';
+import { MusicService } from '../../services/music.service';
 import { HeaderComponent } from '../header/header.component';
-
-interface UserData {
-  bestScores: Record<string, number>;
-}
+import { MenuComponent } from '../menu/menu.component';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [CommonModule, HeaderComponent, MenuComponent, RouterOutlet],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+    standalone: true,
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css'],
+    imports: [HeaderComponent, MenuComponent, RouterModule],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
+    isSoundOn: boolean = true;
+    isColorsOn: boolean = true;
+    isMusicOn: boolean = true;
+    isVibrationOn: boolean = true;
 
-  constructor(
-    private authService: AuthService, 
-    private firestore: AngularFirestore, 
-    private scoreService: ScoreService
-  ) {}
+    private settingsSubscription: Subscription | null = null;
 
-  ngOnInit(): void {
-    this.syncBestScoresWithFirestore();
-    console.log('User ID from home:', this.authService.getUserId());
-  }
+    constructor(
+        private settingsService: SettingsService,
+        private musicService: MusicService,
+        private authService: AuthService
+    ) { }
 
-  async syncBestScoresWithFirestore(): Promise<void> {
-    const userId = this.authService.getUserId();
-    console.log('syncBestScoresWithFirestore called. userId:', userId);
-    
-    if (!userId || userId === 'guest') {
-      console.log('Guest user detected. Syncing only with localStorage.');
-      return;
+    ngOnInit() {
+        this.authService.user$.subscribe(user => {
+            if (user) {
+                const userId = user.uid;
+                console.log('home-userid:', userId);
+
+                // Beállítások betöltése a Firestore-ból, ha be van jelentkezve a felhasználó
+                this.settingsService.loadSettings();
+            } else {
+                console.log('Nincs bejelentkezett felhasználó');
+            }
+        });
+
+        // Feliratkozás a beállítások változásaira
+        this.settingsSubscription = this.settingsService.userSettings$.subscribe(settings => {
+            this.isSoundOn = settings.soundSetting ?? true;
+            this.isColorsOn = settings.colorsSetting ?? true;
+            this.isMusicOn = settings.musicSetting ?? true;
+            this.isVibrationOn = settings.vibrationSetting ?? true;
+
+            // Zene kezelés
+            this.isMusicOn ? this.musicService.playMusic() : this.musicService.stopMusic();
+        });
     }
-  
-    try {
-      const userDocSnapshot = await firstValueFrom(this.firestore.collection('users').doc(userId).get());
-      console.log('Firestore document snapshot:', userDocSnapshot);
-  
-      const userData = userDocSnapshot.data() as UserData | undefined;
-      console.log('UserData from Firestore:', userData);
-  
-      const firestoreBestScores = userData?.bestScores || {};
-      console.log('Firestore best scores:', firestoreBestScores);
-  
-      const difficulties = ['easy', 'hard', 'extreme', 'challenge'];
-  
-      difficulties.forEach((difficulty) => {
-        const localStorageKey = `bestScore_${userId}_${difficulty}`;
-        const localBestScore = parseInt(localStorage.getItem(localStorageKey) || '0', 10);
-        const firestoreBestScore = firestoreBestScores[difficulty] || 0;
-  
-        console.log(`Local best score for ${difficulty}:`, localBestScore);
-        console.log(`Firestore best score for ${difficulty}:`, firestoreBestScore);
-  
-        if (localBestScore > firestoreBestScore) {
-          console.log(`Local best score for ${difficulty} is greater. Updating Firestore...`);
-          this.scoreService.saveBestScoreToDatabase(userId, localBestScore, difficulty);
-        } else if (firestoreBestScore > localBestScore) {
-          console.log(`Firestore best score for ${difficulty} is greater. Updating localStorage...`);
-          localStorage.setItem(localStorageKey, firestoreBestScore.toString());
-          this.scoreService.bestScoreSubjects[difficulty].next(firestoreBestScore);
+
+    // A komponens elpusztításakor töröljük a feliratkozásokat
+    ngOnDestroy() {
+        if (this.settingsSubscription) {
+            this.settingsSubscription.unsubscribe();
         }
-      });
-    } catch (error) {
-      console.error('Error syncing best scores with Firestore:', error);
     }
-  }
-  
 }

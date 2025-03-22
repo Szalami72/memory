@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 
 import { DifficultyService } from '../../services/difficulty.service';
 import { LevelService } from '../../services/level.service';
-import { MusicService } from '../../services/music.service';
 
 @Component({
   selector: 'app-header-game',
@@ -25,7 +24,6 @@ export class HeaderGameComponent implements OnInit, OnDestroy {
   private levelSubscription: Subscription | undefined;
 
   constructor(private router: Router, 
-    private musicService: MusicService, 
     private difficultyService: DifficultyService, 
     private levelService: LevelService) { }
 

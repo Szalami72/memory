@@ -3,6 +3,7 @@ import { GameService } from '../../../services/game.service';
 import { LevelService } from '../../../services/level.service';
 import { ScoreService } from '../../../services/score.service';
 import { MusicService } from '../../../services/music.service';
+import { SettingsService } from '../../../services/settings.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -43,7 +44,8 @@ export class EasyComponent implements OnInit, OnDestroy {
   constructor(public gameService: GameService,
      public levelService: LevelService,
       public scoreService: ScoreService,
-      private musicService: MusicService) {}
+      private musicService: MusicService,
+      private settingsService: SettingsService) {}
 
   ngOnInit(): void {
     this.resetGameState();
