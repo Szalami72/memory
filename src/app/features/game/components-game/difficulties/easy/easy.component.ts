@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+
 import { GameService } from '../../../services/game.service';
 import { LevelService } from '../../../services/level.service';
 import { ScoreService } from '../../../services/score.service';
 import { MusicService } from '../../../services/music.service';
 import { SettingsService } from '../../../services/settings.service';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-scene-game',
@@ -33,7 +35,11 @@ export class EasyComponent implements OnInit, OnDestroy {
   lastCorrectClickTime: number | null = null;
   MAX_CLICK_TIME_WINDOW: number = 2000; // 2 másodperc
 
+  colorSetting: boolean = true; //színek vagy ábrák
+
+
   private gameTimeout: any;
+  private settingsSubscription: Subscription | null = null;
   
   @ViewChildren('square') squares!: QueryList<ElementRef>;
 
@@ -48,11 +54,18 @@ export class EasyComponent implements OnInit, OnDestroy {
       private settingsService: SettingsService) {}
 
   ngOnInit(): void {
+    this.settingsSubscription = this.settingsService.userSettings$.subscribe(settings => {
+      this.colorSetting = settings.colorsSetting ?? true; // Ha nincs érték, true-t használunk
+      console.log('Színbeállítás:', this.colorSetting);
+  });
     this.resetGameState();
     this.startCountdown();
   }
 
   ngOnDestroy(): void {
+    if (this.settingsSubscription) {
+      this.settingsSubscription.unsubscribe();
+  }
     clearInterval(this.countdownInterval);
     clearTimeout(this.gameTimeout);
     this.isGameRunning = false;

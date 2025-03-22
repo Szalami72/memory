@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 console.log('home-userid:', userId);
 
                 // Beállítások betöltése a Firestore-ból, ha be van jelentkezve a felhasználó
-                this.settingsService.loadSettings();
+                this.settingsService.initializeUserId();
             } else {
                 console.log('Nincs bejelentkezett felhasználó');
             }

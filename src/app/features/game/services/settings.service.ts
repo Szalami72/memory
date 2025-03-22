@@ -33,7 +33,7 @@ export class SettingsService {
         this.initializeUserId();
     }
 
-    private async initializeUserId() {
+    async initializeUserId() {
         try {
             this.userId = await this.authService.getUserIdAsync();
             if (this.userId) {
@@ -41,24 +41,21 @@ export class SettingsService {
                 await this.loadSettings();
             } else {
                 console.log('Nem található felhasználói azonosító!');
+                await this.loadSettings(); // Vendég esetén is betöltjük a beállításokat a localStorage-ból
             }
         } catch (error) {
             console.error('Hiba történt az azonosító lekérésekor:', error);
+            await this.loadSettings(); // Hibás azonosító esetén is betöltjük a beállításokat a localStorage-ból
         }
     }
 
     async loadSettings() {
         if (!this.userId) {
-            console.log('Nincs elérhető felhasználói azonosító!');
-            return;
+            console.log('Nincs elérhető felhasználói azonosító, localStorage-ból töltjük be a beállításokat.');
         }
 
-        const userDoc = await this.firestore.collection('users').doc(this.userId).get().toPromise();
-
-        if (userDoc?.exists) {
-            const settings = userDoc.data() as UserSettings;
-            this.userSettingsSubject.next(settings);
-        } else {
+        if (this.userId === null) {
+            // Vendég felhasználó esetén csak a localStorage-t használjuk
             const savedSettings = await this.getSettingsFromPreferences();
             if (savedSettings) {
                 this.userSettingsSubject.next(savedSettings);
@@ -69,6 +66,26 @@ export class SettingsService {
                     musicSetting: true,
                     vibrationSetting: true,
                 });
+            }
+        } else {
+            // Bejelentkezett felhasználó esetén a Firebase-t használjuk
+            const userDoc = await this.firestore.collection('users').doc(this.userId).get().toPromise();
+
+            if (userDoc?.exists) {
+                const settings = userDoc.data() as UserSettings;
+                this.userSettingsSubject.next(settings);
+            } else {
+                const savedSettings = await this.getSettingsFromPreferences();
+                if (savedSettings) {
+                    this.userSettingsSubject.next(savedSettings);
+                } else {
+                    this.userSettingsSubject.next({
+                        soundSetting: true,
+                        colorsSetting: true,
+                        musicSetting: true,
+                        vibrationSetting: true,
+                    });
+                }
             }
         }
     }
@@ -104,7 +121,8 @@ export class SettingsService {
         await Preferences.set({ key, value: JSON.stringify(value) });
         console.log(`Setting ${key} has been saved in Preferences with value: ${value}`);
 
-        if (this.userId) {
+        if (this.userId && this.userId !== null) {
+            // Bejelentkezett felhasználó esetén a Firebase-t használjuk
             const updateData: Partial<UserSettings> = { [key]: value };
 
             try {
@@ -115,7 +133,7 @@ export class SettingsService {
                 console.error('Error updating Firestore:', error);
             }
         } else {
-            console.log('No user ID found, skipping Firestore update.');
+            console.log('Guest user, skipping Firestore update.');
         }
 
         const updatedSettings = { ...this.userSettingsSubject.value, [key]: value };

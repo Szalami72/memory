@@ -88,18 +88,18 @@ export class AuthService {
     }
 
     getUserId(): string | null {
-        if (this.isGuestSubject.value) {
-            return 'guest';
-        }
-        const currentUser = this.userSubject.value;
-        return currentUser ? currentUser.uid : null;
-    }
+      if (this.isGuestSubject.value) {
+          return null; // Vendég esetén null-t adunk vissza
+      }
+      const currentUser = this.userSubject.value;
+      return currentUser ? currentUser.uid : null;
+  }
 
-    async getUserIdAsync(): Promise<string | null> {
-        if (this.isGuestSubject.value) {
-            return 'guest';
-        }
-        const currentUser = await this.afAuth.currentUser;
-        return currentUser ? currentUser.uid : null;
-    }
+  async getUserIdAsync(): Promise<string | null> {
+      if (this.isGuestSubject.value) {
+          return null; // Vendég esetén null-t adunk vissza
+      }
+      const currentUser = await this.afAuth.currentUser;
+      return currentUser ? currentUser.uid : null;
+  }
 }
