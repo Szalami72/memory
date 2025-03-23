@@ -36,6 +36,7 @@ export class EasyComponent implements OnInit, OnDestroy {
   MAX_CLICK_TIME_WINDOW: number = 2000; // 2 másodperc
 
   colorSetting: boolean = true; //színek vagy ábrák
+  soundSetting: boolean = true;
 
 
   private gameTimeout: any;
@@ -58,6 +59,10 @@ export class EasyComponent implements OnInit, OnDestroy {
       this.colorSetting = settings.colorsSetting ?? true; // Ha nincs érték, true-t használunk
       console.log('Színbeállítás:', this.colorSetting);
   });
+    this.settingsSubscription = this.settingsService.userSettings$.subscribe(settings => {
+      this.soundSetting = settings.soundSetting ?? true; // Ha nincs érték, true-t használunk
+    });
+    this.musicService.preloadSounds();
     this.resetGameState();
     this.startCountdown();
   }
@@ -137,16 +142,49 @@ export class EasyComponent implements OnInit, OnDestroy {
 
   onSquareClick(clickedValue: number): void {
     if (!this.canClick || this.isFailed) return;
-
-    this.playSound(clickedValue);
-
-    // A kattintást hozzáadjuk a queue-hoz
+  
+    const index = clickedValue - 1;
+    const squareElement = this.squares.toArray()[index]?.nativeElement;
+    if (!squareElement) return;
+  
+    const originalClass = squareElement.className;
+    const idleClass = originalClass.split(' ').find((cls: string) => cls.endsWith('-idle'));
+  
+    if (idleClass) {
+      const activeClass = idleClass.replace('-idle', '');
+  
+      // Aktiválás (osztálycsere és hang lejátszása)
+      squareElement.className = originalClass.replace(idleClass, activeClass);
+      this.playSound(clickedValue);
+  
+      // **Biztos visszaállítás** egy időzítővel függetlenül az eseményektől
+      setTimeout(() => {
+        squareElement.className = originalClass;
+      }, 500); // 🔹 500ms után visszaáll az eredeti állapot
+  
+      // Eseményfigyelők a manuális visszaállításhoz
+      const deactivate = () => {
+        squareElement.className = originalClass;
+        squareElement.removeEventListener('mouseup', deactivate);
+        squareElement.removeEventListener('mouseleave', deactivate);
+        squareElement.removeEventListener('touchend', deactivate);
+      };
+  
+      squareElement.addEventListener('mouseup', deactivate);
+      squareElement.addEventListener('mouseleave', deactivate);
+      squareElement.addEventListener('touchend', deactivate);
+    }
+  
+    // Hozzáadjuk a kattintást a queue-hoz
     this.clickQueue.push(clickedValue);
+  
     // Ha nincs éppen folyamatban kattintás feldolgozás, elindítjuk
     if (!this.isProcessingClick) {
       this.processNextClick();
     }
   }
+  
+  
 
   async processNextClick(): Promise<void> {
     if (this.clickQueue.length === 0) {
@@ -262,7 +300,8 @@ export class EasyComponent implements OnInit, OnDestroy {
 
   
   playSound(value: number): void {
-    this.musicService.playSound(`../../../../../assets/sounds/${value}.mp3`);
+    if(this.soundSetting === false) return;
+    this.musicService.playSound(value);
   }
   
 }
