@@ -1,19 +1,36 @@
 import { Injectable } from '@angular/core';
+import { OnInit } from '@angular/core';
+import { SettingsService } from './settings.service';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class MusicService {
+export class MusicService implements OnInit {
   private audio: HTMLAudioElement;
   private isPlaying = false;
   private isPreloaded = false;
   private audioElements: { [key: number]: HTMLAudioElement } = {};
+  private settingsSubscription: Subscription | null = null;
+    soundSetting: boolean = true;
 
-  constructor() {
+  ngOnInit(): void {
+    
+  }
+
+  ngOnDestroy(): void {
+    if (this.settingsSubscription) {
+      this.settingsSubscription.unsubscribe();
+    }
+  }
+  constructor(private settingsService: SettingsService) {
     this.audio = new Audio('assets/sounds/background-music.mp3');
     this.audio.loop = true;
-    // Ha szükséges, kezdetben elnémítva is indíthatod:
-    // this.audio.muted = true;
+    this.settingsSubscription = this.settingsService.userSettings$.subscribe(settings => {
+      this.soundSetting = settings.soundSetting ?? true; // Ha nincs érték, true-t használunk
+      console.log('hangbeállítás:', this.soundSetting);
+    });
+
   }
 
   preloadSounds(): void {
@@ -25,6 +42,7 @@ export class MusicService {
       this.audioElements[i] = audio;
     }
     this.isPreloaded = true;
+    console.log('Hangok betöltve');
   }
   
 
@@ -47,7 +65,7 @@ export class MusicService {
   }
 
   playSound(value: number): void {
-    if (!this.isPreloaded) return; // Ha még nem töltöttek be a hangok, ne játszd le
+    if (!this.isPreloaded || !this.soundSetting) return; // Ha még nem töltöttek be a hangok, ne játszd le
 
     const audio = this.audioElements[value];
     if (audio) {

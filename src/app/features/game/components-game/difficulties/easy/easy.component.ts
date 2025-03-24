@@ -57,7 +57,6 @@ export class EasyComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.settingsSubscription = this.settingsService.userSettings$.subscribe(settings => {
       this.colorSetting = settings.colorsSetting ?? true; // Ha nincs érték, true-t használunk
-      console.log('Színbeállítás:', this.colorSetting);
   });
     this.settingsSubscription = this.settingsService.userSettings$.subscribe(settings => {
       this.soundSetting = settings.soundSetting ?? true; // Ha nincs érték, true-t használunk
@@ -125,11 +124,12 @@ export class EasyComponent implements OnInit, OnDestroy {
         return;  // Ha a játék már nem fut, akkor kilépünk
       }
       const index = value - 1;
+      this.playSound(value);
+
       const squareElement = this.squares.toArray()[index]?.nativeElement;
       if (!squareElement) continue;
       const originalClass = squareElement.className;
       const idleClass = originalClass.split(' ').find((cls: string) => cls.endsWith('-idle'));
-      this.playSound(value);
       if (idleClass) {
         const activeClass = idleClass.replace('-idle', '');
         squareElement.className = originalClass.replace(idleClass, activeClass);
@@ -152,10 +152,10 @@ export class EasyComponent implements OnInit, OnDestroy {
   
     if (idleClass) {
       const activeClass = idleClass.replace('-idle', '');
-  
+      this.playSound(clickedValue);
+
       // Aktiválás (osztálycsere és hang lejátszása)
       squareElement.className = originalClass.replace(idleClass, activeClass);
-      this.playSound(clickedValue);
   
       // **Biztos visszaállítás** egy időzítővel függetlenül az eseményektől
       setTimeout(() => {
@@ -300,7 +300,6 @@ export class EasyComponent implements OnInit, OnDestroy {
 
   
   playSound(value: number): void {
-    if(this.soundSetting === false) return;
     this.musicService.playSound(value);
   }
   
