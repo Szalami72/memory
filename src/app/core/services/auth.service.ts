@@ -102,4 +102,5 @@ export class AuthService {
       const currentUser = await this.afAuth.currentUser;
       return currentUser ? currentUser.uid : null;
   }
+  
 }

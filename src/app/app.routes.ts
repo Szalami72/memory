@@ -7,6 +7,7 @@ import { ProfileComponent } from './features/game/components/profile/profile.com
 import { SettingsComponent } from './features/game/components/settings/settings.component';
 import { DailyChallengeComponent } from './features/game/components/daily-challenge/daily-challenge.component';
 import { EasyComponent } from './features/game/components-game/difficulties/easy/easy.component';
+import { HardComponent } from './features/game/components-game/difficulties/hard/hard.component';
 import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -30,7 +31,8 @@ export const routes: Routes = [
     path: 'game', component: FrameComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: 'easy', component: EasyComponent, runGuardsAndResolvers: 'always' }
+      { path: 'easy', component: EasyComponent, runGuardsAndResolvers: 'always' },
+      { path: 'hard', component: HardComponent, runGuardsAndResolvers: 'always' },
     ]
   },
   {

@@ -15,10 +15,14 @@ export class GameService {
     return possibleNumbers[randomIndex];
   }
 
-  // addRandomNumberToArrayAndGetArray(): number[] {
-  //   const randomNumber = this.getRandomNumberWithoutFive();
-  //   this.randomNumbers.push(randomNumber);
-  //   return this.randomNumbers;
-  // }
+  getMultyRandomNumberWithoutFive(numbers: number): number[] {
+    const randomNumbers: number[] = [];
+    const possibleNumbers = [1, 2, 3, 4, 6, 7, 8, 9];
+    for (let i = 0; i < numbers; i++) {
+      const randomIndex = Math.floor(Math.random() * possibleNumbers.length);
+      randomNumbers.push(possibleNumbers[randomIndex]);
+    }
+    return randomNumbers;
+  }
 
 }
