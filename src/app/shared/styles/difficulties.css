@@ -1,0 +1,208 @@
+.scene-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 3.5vw;
+    /* background-color: #6e2c00; */
+    background-color: #dc7633;
+    height: 80vh;
+    width: 100%;
+    position: relative;
+}
+
+.square-container {
+    width: 93vw;
+    height: 93vw;
+    box-sizing: border-box;
+    /* border: 4px solid #dc7633; */
+    border: 4px solid #6e2c00;
+    border-radius: 10px;
+    padding: 1px;
+    background-color: #6e2c00;
+    display: grid; /* Hozzáadtuk: Grid elrendezés engedélyezése */
+    grid-template-columns: repeat(3, 1fr); /* Hozzáadtuk: 3 egyenlő szélességű oszlop */
+    grid-template-rows: repeat(3, 1fr); /* Hozzáadtuk: 3 egyenlő magasságú sor */
+}
+
+.square {
+    /* width: 31vw; Ezt a grid kezeli */
+    /* height: 31vw; Ezt a grid kezeli */
+    box-sizing: border-box;
+    border: 2px solid #fff;
+    border-radius: 6px;
+    margin: 6px;
+    display: flex; /* Opcionális: a számok középre igazításához */
+    justify-content: center; /* Opcionális: a számok középre igazításához */
+    align-items: center; /* Opcionális: a számok középre igazításához */
+    font-size: 2em; /* Opcionális: a számok méretének növeléséhez */
+}
+
+.symbol-square {
+    padding: 4vw;
+}
+
+.square img {
+    width: 100%;
+    height: 100%;
+ }
+
+.gray-idle {
+    background-color: #999;
+  }
+
+.gray {
+    background-color: #eee;
+  }
+
+.square.correct {
+    border: 3px solid green; /* Példa a helyes kattintásra */
+  }
+  
+  .square.incorrect {
+    border: 3px solid red; /* Példa a hibás kattintásra */
+  }
+
+
+.square.correct {
+  border: 3px solid green; /* Példa a helyes kattintásra */
+}
+
+ .square.not-used {
+    background-color: #6e2c00;
+    border: 2px solid #6e2c00;
+ }
+
+
+   /* position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.square.not-used::before,
+.square.not-used::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 6px;
+    background-color: #fff;
+    transform-origin: center center; 
+}
+
+.square.not-used::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.square.not-used::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+} */
+
+.red {
+    /* background-color: #e74c3c; */
+    background-color: red;
+}
+.red-idle {
+    background-color: #e74c3c;
+}
+
+.green {
+    background-color: green;
+}
+.green-idle {
+    background-color: #2ecc71;
+}
+
+.blue {
+    background-color: blue;
+}
+.blue-idle {
+    background-color: #3498db;
+}
+
+.yellow {
+    background-color: yellow;
+}
+.yellow-idle {
+    background-color: #f1c40f;
+}
+
+.orange {
+    background-color: orange;
+}
+.orange-idle {
+    background-color: #e67e22;
+}
+
+
+.magenta{
+    background-color: magenta;
+}
+.magenta-idle {
+    background-color: #be2edd;
+}
+
+.cyan {
+    background-color: cyan;
+}
+.cyan-idle {
+    background-color: #00b5cc;
+}
+
+.purple {
+    background-color: #800080;
+}
+.purple-idle {
+    background-color: #8e44ad;
+}
+
+.darkgrey {
+    background-color: #34495e;
+}
+
+.border-red {
+    border: 2px solid red;
+}
+.border-green {
+    border: 2px solid green;
+}
+.countdown-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.75); /* Opcionális háttér a jobb láthatóságért */
+    z-index: 10; /* Biztosítja, hogy a visszaszámlálás a többi elem fölött legyen */
+  }
+  
+  .countdown-number {
+    font-size: 15vh; /* Nagyobb betűméret a jobb láthatóságért */
+    color: white; /* Fehér színű szöveg */
+    font-weight: bold;
+  }
+
+  .new-game-link {
+    background-color: #6e2c00;
+    color: #dc7633;
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.next-level {
+    font-size: 4vh;
+    color: #fff;
+    font-weight: bold;
+}
+
+.level-reached {
+    font-size: 3vh;
+    color: #fff;
+}
