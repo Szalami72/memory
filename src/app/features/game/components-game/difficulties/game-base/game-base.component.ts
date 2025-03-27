@@ -123,44 +123,48 @@ export abstract class GameBaseComponent implements OnInit, OnDestroy {
       }
       const index = value - 1;
       this.playSound(value);
-
+  
       const squareElement = this.squares.toArray()[index]?.nativeElement;
       if (!squareElement) continue;
       const originalClass = squareElement.className;
       const idleClass = originalClass.split(' ').find((cls: string) => cls.endsWith('-idle'));
       if (idleClass) {
         const activeClass = idleClass.replace('-idle', '');
-        squareElement.className = originalClass.replace(idleClass, activeClass);
+        // Hozzáadjuk a .glow osztályt
+        squareElement.className = originalClass.replace(idleClass, activeClass) + ' glow';
         await this.delay(1000);
+        // Itt is vissza kell állítani a .glow osztályt, ha nem akarjuk, hogy ott maradjon
         squareElement.className = originalClass;
         await this.delay(500);
       }
     }
   }
-
+  
   onSquareClick(clickedValue: number): void {
     if (!this.canClick || this.isFailed) return;
-
+  
     const index = clickedValue - 1;
     const squareElement = this.squares.toArray()[index]?.nativeElement;
     if (!squareElement) return;
-
+  
     const originalClass = squareElement.className;
     const idleClass = originalClass.split(' ').find((cls: string) => cls.endsWith('-idle'));
-
+  
     if (idleClass) {
       const activeClass = idleClass.replace('-idle', '');
       this.playSound(clickedValue);
-
-      squareElement.className = originalClass.replace(idleClass, activeClass);
-
+  
+      // Hozzáadjuk a .glow osztályt
+      squareElement.className = originalClass.replace(idleClass, activeClass) + ' glow';
+  
       setTimeout(() => {
+        // Itt is vissza kell állítani a .glow osztályt, ha nem akarjuk, hogy ott maradjon
         squareElement.className = originalClass;
       }, 500);
     }
-
+  
     this.clickQueue.push(clickedValue);
-
+  
     if (!this.isProcessingClick) {
       this.processNextClick();
     }

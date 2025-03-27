@@ -30,12 +30,7 @@ export class ExtremeComponent extends GameBaseComponent {
   }
 
   generateCorrectSequence(): void {
-    if (this.level === 1) {
-      this.correctSequence = [this.gameService.getRandomNumberWithoutFive()];
-      this.scoreService.resetScore(); // A pontszámot itt nullázzuk az Easy módban az első szinten
-    } else {
-      this.correctSequence.push(this.gameService.getRandomNumberWithoutFive());
-    }
+    this.correctSequence = this.gameService.getMultyRandomNumberWithoutFive(this.level);
   }
 
   override async processNextClick(): Promise<void> {
