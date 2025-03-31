@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameBaseComponent } from '../game-base/game-base.component';
 import { GameService } from '../../../services/game.service';
@@ -22,9 +22,10 @@ export class HardComponent extends GameBaseComponent {
     scoreService: ScoreService,
     musicService: MusicService,
     settingsService: SettingsService,
-    difficultyService: DifficultyService
+    difficultyService: DifficultyService,
+    cdr: ChangeDetectorRef
   ) {
-    super(gameService, levelService, scoreService, musicService, settingsService, difficultyService);
+    super(gameService, levelService, scoreService, musicService, settingsService, difficultyService, cdr);
   }
 
   generateCorrectSequence(): void {

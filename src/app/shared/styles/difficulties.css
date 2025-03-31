@@ -1,6 +1,7 @@
 .scene-container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    /* justify-content: space-around; */
     align-items: center;
     padding: 0 3.5vw;
     /* background-color: #6e2c00; */
@@ -8,6 +9,18 @@
     height: 80vh;
     width: 100%;
     position: relative;
+}
+.traffic-light{
+    display: flex;
+    flex-direction: row;
+    margin-top: 30vw;
+}
+
+.traffic-light div{
+    margin:1vw;
+    width: 4vw;
+    height: 4vw;
+    border-radius: 50%;
 }
 
 .square-container {
@@ -18,6 +31,7 @@
     border: 4px solid #6e2c00;
     border-radius: 10px;
     padding: 1px;
+    margin-top: 5vw;
     background-color: #6e2c00;
     display: grid; /* Hozzáadtuk: Grid elrendezés engedélyezése */
     grid-template-columns: repeat(3, 1fr); /* Hozzáadtuk: 3 egyenlő szélességű oszlop */
@@ -35,6 +49,7 @@
     justify-content: center; /* Opcionális: a számok középre igazításához */
     align-items: center; /* Opcionális: a számok középre igazításához */
     font-size: 2em; /* Opcionális: a számok méretének növeléséhez */
+
 }
 
 .symbol-square {
@@ -54,18 +69,6 @@
     background-color: #eee;
   }
 
-.square.correct {
-    border: 3px solid green; /* Példa a helyes kattintásra */
-  }
-  
-  .square.incorrect {
-    border: 3px solid red; /* Példa a hibás kattintásra */
-  }
-
-
-.square.correct {
-  border: 3px solid green; /* Példa a helyes kattintásra */
-}
 
  .square.not-used {
     background-color: #6e2c00;
@@ -99,62 +102,62 @@
     transform: translate(-50%, -50%) rotate(-45deg);
 } */
 
-.red {
-    /* background-color: #e74c3c; */
+.red-idle {
     background-color: red;
 }
-.red-idle {
-    background-color: #e74c3c;
+.red {
+    background-color: #ff4d4d;
 }
 
-.green {
+.green-idle {
     background-color: green;
 }
-.green-idle {
-    background-color: #2ecc71;
+.green {
+    background-color: #00cc00;
 }
 
-.blue {
+.blue-idle {
     background-color: blue;
 }
-.blue-idle {
-    background-color: #3498db;
+.blue {
+    background-color: #4d4dff;
 }
 
-.yellow {
+.yellow-idle {
     background-color: yellow;
 }
-.yellow-idle {
-    background-color: #f1c40f;
+.yellow {
+    background-color: #ffff4d
+
 }
 
-.orange {
+.orange-idle {
     background-color: orange;
 }
-.orange-idle {
-    background-color: #e67e22;
+.orange {
+    background-color: #ffc14d;
 }
 
 
-.magenta{
+.magenta-idle {
     background-color: magenta;
 }
-.magenta-idle {
-    background-color: #be2edd;
+.magenta {
+    background-color: #ff4dff;
 }
 
-.cyan {
+.cyan-idle {
     background-color: cyan;
 }
-.cyan-idle {
-    background-color: #00b5cc;
+.cyan {
+    background-color: #4dffff;
 }
 
-.purple {
+.purple-idle {
     background-color: #800080;
 }
-.purple-idle {
-    background-color: #8e44ad;
+.purple {
+    background-color: #cc00cc;
 }
 
 .darkgrey {
@@ -207,5 +210,5 @@
     color: #fff;
 }
 .glow{
-box-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.5), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.5);
+box-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.5), inset -6px -6px 6px 0 rgba(255, 255, 255, 0.5);
 }

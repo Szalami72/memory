@@ -9,6 +9,7 @@ import { DailyChallengeComponent } from './features/game/components/daily-challe
 import { EasyComponent } from './features/game/components-game/difficulties/easy/easy.component';
 import { HardComponent } from './features/game/components-game/difficulties/hard/hard.component';
 import { ExtremeComponent } from './features/game/components-game/difficulties/extreme/extreme.component';
+import { ChallengeComponent } from './features/game/components-game/difficulties/challenge/challenge.component';
 import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -35,6 +36,7 @@ export const routes: Routes = [
       { path: 'easy', component: EasyComponent, runGuardsAndResolvers: 'always' },
       { path: 'hard', component: HardComponent, runGuardsAndResolvers: 'always' },
       { path: 'extreme', component: ExtremeComponent, runGuardsAndResolvers: 'always' },
+      { path: 'challenge', component: ChallengeComponent, runGuardsAndResolvers: 'always' },
     ]
   },
   {

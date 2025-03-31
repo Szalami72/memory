@@ -1,8 +1,10 @@
 .game-title{
     padding-top: 2vh;
     font-size: clamp(24px, 10vw, 48px);
+    text-shadow: 2px 2px 2px rgba(255, 255, 255, 0.75);
 }
 
 .name {
     font-size: larger;
+    color: white;
 }

@@ -16,8 +16,13 @@
         <div class="next-level">Level: {{level}}</div>
     </div>
 
+    <div class="traffic-light" >
+        <div [ngClass]="{'red': !canClick, 'green': canClick}"></div>
+        <div [ngClass]="{'red': !canClick, 'green': canClick}"></div>
+        <div [ngClass]="{'red': !canClick, 'green': canClick}"></div>
+    </div>
 <div *ngIf="colorSetting">
-    <div class="square-container" [ngClass]="{'border-red': !canClick, 'border-green': canClick}">
+    <div class="square-container" >
         <div class="square red-idle" #square data-value="1" (click)="onSquareClick(1)"></div>
         <div class="square green-idle" #square data-value="2" (click)="onSquareClick(2)"></div>
         <div class="square blue-idle" #square data-value="3" (click)="onSquareClick(3)"></div>
@@ -31,7 +36,7 @@
 </div>
 
 <div *ngIf="!colorSetting">
-    <div class="square-container" [ngClass]="{'border-red': !canClick, 'border-green': canClick}">
+    <div class="square-container">
 
         <div class="square symbol-square gray-idle" #square data-value="1">
             <img src="assets/images/1.png" alt="Image 1" (click)="onSquareClick(1)" />

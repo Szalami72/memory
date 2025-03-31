@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameBaseComponent } from '../game-base/game-base.component';
 import { GameService } from '../../../services/game.service';
@@ -24,9 +24,10 @@ export class ExtremeComponent extends GameBaseComponent {
     scoreService: ScoreService,
     musicService: MusicService,
     settingsService: SettingsService,
-    difficultyService: DifficultyService
+    difficultyService: DifficultyService,
+    cdr: ChangeDetectorRef
   ) {
-    super(gameService, levelService, scoreService, musicService, settingsService, difficultyService);
+    super(gameService, levelService, scoreService, musicService, settingsService, difficultyService, cdr);
   }
 
   generateCorrectSequence(): void {
@@ -54,11 +55,8 @@ export class ExtremeComponent extends GameBaseComponent {
       this.userSequence.push(clickedValue);
       this.clickIndex++;
       this.updateScore();
-      // Azonnali vizuális visszajelzés
-      clickedSquare.classList.add('correct');
-      // Várunk a visszajelzés animációjára
+      clickedSquare.classList.add('corect');
       await this.delay(300);
-      clickedSquare.classList.remove('correct');
 
       if (this.userSequence.length === this.correctSequence.length) {
         // Ha a sorozat teljes, letiltjuk a további kattintásokat és szintváltunk

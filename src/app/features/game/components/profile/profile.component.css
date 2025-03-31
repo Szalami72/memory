@@ -1,0 +1,14 @@
+.footer {
+    position: relative;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 0;  /* A container alján jelenik meg */
+    left: 0;
+    height: 4px;
+    background-color: #6e2c00;
+    color: #6e2c00;
+    transition: width 50ms linear;
+    width: 0%;
+  }

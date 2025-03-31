@@ -1,18 +1,28 @@
 <div class="profile-container">
     <div class="header">
         <h3>My profile</h3>
+
     </div>
     <div class="line"></div>
 
     <div class="content">
 
+
     </div>
 
     <div class="footer">
-        
+        <div class="progress-bar" [style.width.%]="progress"></div>
+
         <div class="line"></div>
+
         <div class="buttons">
-            <div class="logout-btn" (click)="logout()">
+            <div class="logout-btn"
+            (mousedown)="startPress()"
+            (mouseup)="endPress()"
+            (mouseleave)="endPress()"
+            (touchstart)="startPress()"
+            (touchend)="endPress()"
+            (touchcancel)="endPress()">
                 <img src="assets/images/logout-icon.png" alt="logout">           
             </div>
             <div class="back-btn" (click)="backToStartPage()">
