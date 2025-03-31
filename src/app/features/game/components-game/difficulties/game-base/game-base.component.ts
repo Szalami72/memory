@@ -43,7 +43,7 @@ export abstract class GameBaseComponent implements OnInit, OnDestroy {
   difficulty: string = '';
 
   private gameTimeout: any;
-  private settingsSubscription: Subscription | null = null;
+   settingsSubscription: Subscription | null = null;
 
   // --- MÓDOSÍTÁS: Timeout-ok tárolása ---
   private glowTimeouts: { [key: number]: any } = {};
