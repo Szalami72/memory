@@ -7,7 +7,58 @@
 
     <div class="content">
 
+        <div *ngIf="user$ | async as user" class="name">
+            <div class="">{{ user?.displayName || 'Guest' }}</div>
+            </div>
 
+            <div class="score-section">
+                <h4>Easy Mode</h4>
+                <ul>
+                    <li *ngFor="let user of easyScores; let i = index"
+                    [ngClass]="{'highlight': user.uid === currentUserId}">
+                        <span *ngIf="i === 0">🥇</span>
+                        <span *ngIf="i === 1">🥈</span>
+                        <span *ngIf="i === 2">🥉</span>
+                        {{ i + 1 }}. {{ user.name }} – {{ user.easy }} pont
+                      </li>
+                      
+                </ul>
+              
+                <h4>Hard Mode</h4>
+                <ul>
+                    <li *ngFor="let user of hardScores; let i = index"
+                    [ngClass]="{'highlight': user.uid === currentUserId}">
+                        <span *ngIf="i === 0">🥇</span>
+                        <span *ngIf="i === 1">🥈</span>
+                        <span *ngIf="i === 2">🥉</span>
+                        {{ i + 1 }}. {{ user.name }} – {{ user.hard }} pont
+                      </li>
+                </ul>
+              
+                <h4>Extreme Mode</h4>
+                <ul>
+                    <li *ngFor="let user of extremeScores; let i = index"
+                    [ngClass]="{'highlight': user.uid === currentUserId}">
+                        <span *ngIf="i === 0">🥇</span>
+                        <span *ngIf="i === 1">🥈</span>
+                        <span *ngIf="i === 2">🥉</span>
+                        {{ i + 1 }}. {{ user.name }} – {{ user.extreme }} pont
+                      </li>
+                </ul>
+              
+                <h4>Challenge Mode</h4>
+                <ul>
+                    <li *ngFor="let user of challengeScores; let i = index"
+                    [ngClass]="{'highlight': user.uid === currentUserId}">
+                        <span *ngIf="i === 0">🥇</span>
+                        <span *ngIf="i === 1">🥈</span>
+                        <span *ngIf="i === 2">🥉</span>
+                        {{ i + 1 }}. {{ user.name }} – {{ user.challenge }} pont
+                      </li>
+                </ul>
+              </div>
+              
+              
     </div>
 
     <div class="footer">

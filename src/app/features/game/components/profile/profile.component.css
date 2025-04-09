@@ -12,3 +12,31 @@
     transition: width 50ms linear;
     width: 0%;
   }
+
+  .score-section {
+    margin-top: 1rem;
+  }
+  
+  .score-section h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .score-section ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1.5rem;
+  }
+  
+  .score-section li {
+    padding: 0.3rem 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .highlight {
+    font-weight: bold;
+    color: #2c7be5; /* kékes szín, ha szeretnéd */
+  }
+  
+  
